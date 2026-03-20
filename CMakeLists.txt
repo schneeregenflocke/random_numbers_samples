@@ -7,7 +7,7 @@ project(random_numbers_samples)
 add_executable(${PROJECT_NAME})
 
 
-target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_17)
+target_compile_features(${PROJECT_NAME} PUBLIC cxx_std_26)
 get_target_property(${PROJECT_NAME}_TARGET_CXX_STANDARD ${PROJECT_NAME} CXX_STANDARD)
 cmake_print_variables(${PROJECT_NAME}_TARGET_CXX_STANDARD)
 

@@ -69,7 +69,7 @@ Das Fenster ist zweigeteilt:
 
 | Komponente      | Zweck                                     |
 | --------------- | ----------------------------------------- |
-| C++17           | Sprache                                   |
+| C++26           | Sprache                                   |
 | OpenGL 4.5 Core | Rendering                                 |
 | GLFW            | Fensterverwaltung und OpenGL-Kontext      |
 | libepoxy        | OpenGL-Funktionslader                     |
