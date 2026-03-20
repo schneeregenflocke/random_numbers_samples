@@ -19,7 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 */
 
-#pragma once
+#ifndef RANDOM_SAMPLES_GLFW_INCLUDE_H
+#define RANDOM_SAMPLES_GLFW_INCLUDE_H
 
 #include <GLFW/glfw3.h>
 #include <epoxy/gl.h>
@@ -45,44 +46,47 @@ public:
     const std::string window_title = "random_samples";
 
     glfwSetErrorCallback(error_callback);
-    auto glfw_init = glfwInit();
+    glfwInit();
 
     SetupHints();
 
     window = glfwCreateWindow(window_width, window_height, window_title.c_str(),
                               nullptr, nullptr);
-    if (glfwGetPlatform() == GLFW_PLATFORM_X11)
-      glfwSetWindowPos(window, 50, 50);
+    if (glfwGetPlatform() == GLFW_PLATFORM_X11) {
+      glfwSetWindowPos(window, kWindowInitX, kWindowInitY);
+    }
 
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
     glfwMakeContextCurrent(window);
     glfwSwapInterval(1);
 
-    std::array<float, 4> clear_color{0.45f, 0.55f, 0.60f, 1.00};
-    glClearColor(clear_color[0], clear_color[1], clear_color[2],
-                 clear_color[3]);
+    const std::array<float, 4> clear_color{kClearColorR, kClearColorG,
+                                           kClearColorB, kClearColorA};
+    glClearColor(clear_color.at(0), clear_color.at(1), clear_color.at(2),
+                 clear_color.at(3));
   }
 
   /// @brief Sets GLFW window hints for OpenGL 4.5 Core Profile with 4x MSAA.
-  void SetupHints() const
+  static void SetupHints()
   {
     const int major_version = 4;
     const int minor_version = 5;
+    const int msaa_samples = 4;
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major_version);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor_version);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, static_cast<int>(true));
 
-    glfwWindowHint(GLFW_SAMPLES, 4);
+    glfwWindowHint(GLFW_SAMPLES, msaa_samples);
 
     // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
     // glfwWindowHint(GLFW_MAXIMIZED, true);
   }
 
   /// @brief Returns the GLSL version string required by the ImGui OpenGL3 backend.
-  std::string GetGLSLVersion() const { return std::string("#version 450"); }
+  [[nodiscard]] static std::string GetGLSLVersion() { return {"#version 450"}; }
 
   /// @brief Returns the underlying GLFWwindow pointer.
   GLFWwindow *GetWindow() { return window; }
@@ -94,7 +98,7 @@ public:
   }
 
   /// @brief GLFW framebuffer resize callback that updates the OpenGL viewport.
-  static void framebuffer_size_callback(GLFWwindow *window, int width,
+  static void framebuffer_size_callback(GLFWwindow * /*window*/, int width,
                                         int height)
   {
     glViewport(0, 0, width, height);
@@ -103,8 +107,8 @@ public:
   /// @brief Returns the current framebuffer size as {width, height} in pixels.
   std::array<int, 2> GetFrambufferSize()
   {
-    int width;
-    int height;
+    int width = 0;
+    int height = 0;
 
     glfwGetFramebufferSize(window, &width, &height);
 
@@ -114,7 +118,7 @@ public:
   /// @brief Returns true while the window should stay open; also calls glfwPollEvents().
   bool Active()
   {
-    bool active = !glfwWindowShouldClose(window);
+    const bool active = (glfwWindowShouldClose(window) == 0);
 
     if (active) {
       glfwPollEvents();
@@ -124,7 +128,7 @@ public:
   }
 
   /// @brief Clears the colour buffer.
-  void Clear() { glClear(GL_COLOR_BUFFER_BIT); }
+  static void Clear() { glClear(GL_COLOR_BUFFER_BIT); }
 
   /// @brief Swaps the front and back buffers (presents the rendered frame).
   void SwapBuffers() { glfwSwapBuffers(window); }
@@ -137,5 +141,14 @@ public:
   }
 
 private:
+  static constexpr float kClearColorR{0.45F};
+  static constexpr float kClearColorG{0.55F};
+  static constexpr float kClearColorB{0.60F};
+  static constexpr float kClearColorA{1.00F};
+  static constexpr int kWindowInitX{50};
+  static constexpr int kWindowInitY{50};
+
   GLFWwindow *window;
 };
+
+#endif // RANDOM_SAMPLES_GLFW_INCLUDE_H

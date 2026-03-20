@@ -15,7 +15,10 @@
       "Bash(./build/random_numbers_samples)",
       "Bash(fc-list)",
       "Bash(echo \"Exit: $?\")",
-      "Bash(doxygen --version)"
+      "Bash(doxygen --version)",
+      "Bash(clang-tidy --version)",
+      "Bash(clang-tidy -p build/compile_commands.json src/script.cpp)",
+      "Bash(clang-tidy -p build/compile_commands.json --header-filter='src/.*' src/script.cpp)"
     ]
   }
 }

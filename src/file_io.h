@@ -19,7 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 */
 
-#pragma once
+#ifndef RANDOM_SAMPLES_FILE_IO_H
+#define RANDOM_SAMPLES_FILE_IO_H
 
 #include <filesystem>
 #include <fstream>
@@ -36,7 +37,7 @@ class FileOutput {
 public:
   /// @brief Opens the file at the given path for writing.
   /// @param name Path to the output file.
-  FileOutput(const std::string &name) : filepath(name)
+  explicit FileOutput(const std::string &name) : filepath(name)
   {
     file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
     OpenFile();
@@ -44,6 +45,11 @@ public:
 
   /// @brief Closes the file on destruction.
   ~FileOutput() { Close(); }
+
+  FileOutput(const FileOutput &) = delete;
+  FileOutput(FileOutput &&) = delete;
+  FileOutput &operator=(const FileOutput &) = delete;
+  FileOutput &operator=(FileOutput &&) = delete;
 
   /// @brief Writes a value to the file and returns the underlying stream.
   template <typename T> std::ofstream &operator<<(const T &value)
@@ -81,3 +87,5 @@ private:
   std::filesystem::path filepath;
   std::ofstream file;
 };
+
+#endif // RANDOM_SAMPLES_FILE_IO_H

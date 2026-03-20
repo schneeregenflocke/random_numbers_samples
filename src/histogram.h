@@ -19,7 +19,8 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 */
 
-#pragma once
+#ifndef RANDOM_SAMPLES_HISTOGRAM_H
+#define RANDOM_SAMPLES_HISTOGRAM_H
 
 #include "transform.h"
 
@@ -36,7 +37,7 @@ namespace histogram = boost::histogram;
 class Histogram {
 public:
   /// @brief Constructs with a default bin count of 20.
-  Histogram() : number_bins(20) {}
+  Histogram() = default;
 
   /// @brief Builds and returns a Boost.Histogram from the given data vector.
   ///
@@ -52,22 +53,23 @@ public:
   {
     const auto axis =
         histogram::axis::regular<>(number_bins, lower_limit, upper_limit);
-    auto histogram = histogram::make_histogram(axis);
+    auto hist = histogram::make_histogram(axis);
     const float weight_value =
         static_cast<float>(1) / static_cast<float>(data.size());
-    histogram.fill(data, histogram::weight(weight_value));
+    hist.fill(data, histogram::weight(weight_value));
 
-    return histogram;
+    return hist;
   }
 
   /// @brief Returns the current number of histogram bins.
-  unsigned int GetNumberBins() { return number_bins; }
+  [[nodiscard]] unsigned int GetNumberBins() const { return number_bins; }
 
   /// @brief Sets the number of histogram bins used in the next SetHistogram() call.
-  void SetNumberBins(unsigned int number_bins)
-  {
-    this->number_bins = number_bins;
-  }
+  void SetNumberBins(unsigned int bins) { number_bins = bins; }
 
-  unsigned int number_bins; ///< Number of equally-spaced bins.
+private:
+  static constexpr unsigned int kDefaultBins{20};
+  unsigned int number_bins{kDefaultBins}; ///< Number of equally-spaced bins.
 };
+
+#endif // RANDOM_SAMPLES_HISTOGRAM_H

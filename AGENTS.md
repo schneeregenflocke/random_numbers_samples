@@ -114,11 +114,11 @@ Die Applikation öffnet ein GLFW-Fenster mit OpenGL 4.5 Core Profile. Ein aktive
 
 ### Bekannte Laufzeit-Eigenheiten
 
-| Meldung / Verhalten | Ursache | Bewertung |
-| --- | --- | --- |
-| `Glfw Error 65548: Wayland: The platform does not support setting the window position` | `glfwSetWindowPos` ist auf Wayland nicht erlaubt; der Aufruf wird nur auf X11 ausgeführt | Harmlos, kein Fehler |
-| Font-Lade-Pfad | Auf Linux wird `/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf` geladen; schlägt das fehl, greift der imgui-Default-Font | Kein Absturz |
-| `io.Fonts->Build()` darf **nicht** manuell aufgerufen werden | Neuere imgui-Versionen (`RendererHasTextures`) verwalten den Font-Atlas intern | Manueller Aufruf führt zu Assertion-Absturz |
+| Meldung / Verhalten                                                                    | Ursache                                                                                                                    | Bewertung                                   |
+| -------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------- |
+| `Glfw Error 65548: Wayland: The platform does not support setting the window position` | `glfwSetWindowPos` ist auf Wayland nicht erlaubt; der Aufruf wird nur auf X11 ausgeführt                                   | Harmlos, kein Fehler                        |
+| Font-Lade-Pfad                                                                         | Auf Linux wird `/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf` geladen; schlägt das fehl, greift der imgui-Default-Font | Kein Absturz                                |
+| `io.Fonts->Build()` darf **nicht** manuell aufgerufen werden                           | Neuere imgui-Versionen (`RendererHasTextures`) verwalten den Font-Atlas intern                                             | Manueller Aufruf führt zu Assertion-Absturz |
 
 ### Häufige Absturzursachen
 
@@ -129,3 +129,29 @@ Die Applikation öffnet ein GLFW-Fenster mit OpenGL 4.5 Core Profile. Ein aktive
   — `io.Fonts->Build()` entfernen; das Backend baut den Atlas selbst.
 - **OpenGL-Typen unbekannt in imgui**: `GLuint`/`GLint` nicht deklariert — `#include <epoxy/gl.h>`
   muss in `custom_imconfig.h` stehen, nicht nur in `glfw_include.h`.
+
+## Screenshots erstellen und anzeigen
+
+Screenshots werden mit `hyprshot` erstellt. Der Speicherort wird durch die Umgebungsvariable `HYPRSHOT_DIR` definiert (z.B. `$HOME/Bilder/Bildschirmfotos`).
+
+### Screenshot des aktuellen Monitors (ohne Mausinteraktion)
+```bash
+hyprshot -m output -m eDP-1 -d
+```
+- `-m output -m eDP-1` — nimmt den Monitor `eDP-1` auf (Monitor-Namen via `hyprctl monitors` ermitteln)
+- `-m output -m active` — nimmt den aktiven Monitor auf (generisch)
+- `-d` — zeigt Debug-Ausgabe mit dem gespeicherten Dateipfad im Terminal
+
+### Screenshot lesen/anzeigen lassen
+Den ausgegebenen Pfad (z.B. `/home/titan99/Bilder/Bildschirmfotos/2026-03-16-130101_hyprshot.png`) an Claude Code übergeben — dieser kann Bilddateien lesen und den Inhalt beschreiben.
+
+### Bereich ausschneiden (Crop) für bessere Lesbarkeit
+Da der volle Screenshot bei kleinen Elementen (z.B. Waybar-Uhr) schwer lesbar ist, kann ein Ausschnitt erstellt werden:
+```bash
+magick <screenshot.png> -crop <breite>x<höhe>+<x>+<y> /tmp/crop.png
+```
+Beispiel — obere linke Ecke (Waybar-Uhr, 200x35 Pixel):
+```bash
+magick /home/titan99/Bilder/Bildschirmfotos/2026-03-16-130707_hyprshot.png -crop 200x35+0+0 /tmp/clock_crop.png
+```
+Hinweis: `convert` ist in ImageMagick v7 veraltet — stattdessen `magick` verwenden.

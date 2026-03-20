@@ -128,6 +128,12 @@ public:
   {
   }
 
+  virtual ~SamplingManagerInterface() = default;
+  SamplingManagerInterface(const SamplingManagerInterface &) = delete;
+  SamplingManagerInterface(SamplingManagerInterface &&) = delete;
+  SamplingManagerInterface &operator=(const SamplingManagerInterface &) = delete;
+  SamplingManagerInterface &operator=(SamplingManagerInterface &&) = delete;
+
   /// @brief Sets the number of samples and sample size for the next GenerateSamples() call.
   virtual void SetSamplerConfig(const size_t number_samples,
                                 const size_t sample_size) = 0;
