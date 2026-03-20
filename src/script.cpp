@@ -76,8 +76,13 @@ int main(int argc, char *argv[])
 	ImGuiContext* context = ImGui::CreateContext();
 	
 	auto& io = ImGui::GetIO();
-	ImFont* font = ImGui::GetIO().Fonts->AddFontFromFileTTF("c:/Windows/Fonts/Arial.ttf", 18.0f);
-	io.Fonts->Build();
+#if defined(_WIN32)
+	ImFont* font = io.Fonts->AddFontFromFileTTF("c:/Windows/Fonts/Arial.ttf", 18.0f);
+#else
+	ImFont* font = io.Fonts->AddFontFromFileTTF("/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf", 18.0f);
+#endif
+	if (!font)
+		font = io.Fonts->AddFontDefault();
 	io.ConfigWindowsResizeFromEdges = true;
 
 	ImGui::StyleColorsLight();

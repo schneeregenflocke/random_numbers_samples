@@ -43,7 +43,8 @@ public:
 		SetupHints();
 
 		window = glfwCreateWindow(window_width, window_height, window_title.c_str(), nullptr, nullptr);
-		glfwSetWindowPos(window, 50, 50);
+		if (glfwGetPlatform() == GLFW_PLATFORM_X11)
+			glfwSetWindowPos(window, 50, 50);
 
 		glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 

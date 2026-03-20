@@ -80,9 +80,52 @@ Das Fenster ist zweigeteilt:
 
 ## Build
 
-CMake 3.16+, C++17-Compiler. Auf Linux: `libepoxy` muss systemseitig installiert sein.
+CMake 3.16+, C++26-Compiler (GCC 15+). Auf Linux: `libepoxy` muss systemseitig installiert sein.
 
 ```sh
 cmake -B build -S .
 cmake --build build
 ```
+
+Das Binary liegt danach unter `build/random_numbers_samples`.
+
+### Bekannte Build-Voraussetzungen (Linux/Arch)
+
+- `libepoxy` (OpenGL-Lader, ersetzt GLAD): `sudo pacman -S libepoxy`
+- Boost-Lizenzdatei ist lokal unter `licenses/LICENSE_1_0.txt` abgelegt (Arch legt sie nicht
+  systemseitig ab)
+- `imgui_tables.cpp` muss explizit mit gebaut werden (in CMakeLists bereits eingetragen)
+- `src/` muss als Include-Pfad gesetzt sein (für `custom_imconfig.h` via `IMGUI_USER_CONFIG`)
+- `IMGUI_IMPL_OPENGL_LOADER_CUSTOM=<epoxy/gl.h>` wird als Compile-Definition gesetzt, damit imgui
+  keinen eigenen GL-Loader verwendet
+- `<epoxy/gl.h>` wird in `custom_imconfig.h` eingebunden, damit alle imgui-Compilation-Units die
+  OpenGL-Typen kennen
+
+## Laufzeit-Debugging
+
+### Starten
+
+```sh
+./build/random_numbers_samples
+```
+
+Die Applikation öffnet ein GLFW-Fenster mit OpenGL 4.5 Core Profile. Ein aktiver Display-Server
+(X11 oder Wayland) ist erforderlich.
+
+### Bekannte Laufzeit-Eigenheiten
+
+| Meldung / Verhalten | Ursache | Bewertung |
+| --- | --- | --- |
+| `Glfw Error 65548: Wayland: The platform does not support setting the window position` | `glfwSetWindowPos` ist auf Wayland nicht erlaubt; der Aufruf wird nur auf X11 ausgeführt | Harmlos, kein Fehler |
+| Font-Lade-Pfad | Auf Linux wird `/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf` geladen; schlägt das fehl, greift der imgui-Default-Font | Kein Absturz |
+| `io.Fonts->Build()` darf **nicht** manuell aufgerufen werden | Neuere imgui-Versionen (`RendererHasTextures`) verwalten den Font-Atlas intern | Manueller Aufruf führt zu Assertion-Absturz |
+
+### Häufige Absturzursachen
+
+- **Font-Assertion**: `Could not load font file!` — der Font-Pfad existiert nicht. Entweder den
+  Pfad in `src/script.cpp` anpassen oder sicherstellen, dass ein Fallback auf
+  `io.Fonts->AddFontDefault()` vorhanden ist.
+- **`Build()` vor Backend-Init**: `Called ImFontAtlas::Build() before RendererHasTextures got set`
+  — `io.Fonts->Build()` entfernen; das Backend baut den Atlas selbst.
+- **OpenGL-Typen unbekannt in imgui**: `GLuint`/`GLint` nicht deklariert — `#include <epoxy/gl.h>`
+  muss in `custom_imconfig.h` stehen, nicht nur in `glfw_include.h`.

@@ -8,7 +8,13 @@
       "Bash(find /usr -name LICENSE_1_0*)",
       "Bash(find /usr/include/boost -name LICENSE* -o -name license*)",
       "Bash(cmake --build build)",
-      "Bash(git submodule:*)"
+      "Bash(git submodule:*)",
+      "Bash(echo \"DISPLAY=$DISPLAY\")",
+      "Bash(echo \"WAYLAND_DISPLAY=$WAYLAND_DISPLAY\")",
+      "Bash(echo \"XDG_SESSION_TYPE=$XDG_SESSION_TYPE\")",
+      "Bash(./build/random_numbers_samples)",
+      "Bash(fc-list)",
+      "Bash(echo \"Exit: $?\")"
     ]
   }
 }
