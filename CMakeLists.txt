@@ -19,7 +19,7 @@ if(${CMAKE_CXX_COMPILER_ID} STREQUAL GNU)
 endif()
 
 
-#target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/src/script.cpp
@@ -67,6 +67,7 @@ target_sources(${PROJECT_NAME} PRIVATE
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/imgui_draw.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/imgui_internal.h
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/imgui_widgets.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/imgui_tables.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/imstb_rectpack.h
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/imstb_textedit.h
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/imstb_truetype.h
@@ -94,11 +95,7 @@ list(APPEND LICENSE_FILES_PATHS
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/embed-resource/LICENSE.txt embed-resource
 )
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL Windows)
-	list(APPEND LICENSE_FILES_PATHS ${Boost_INCLUDE_DIRS}/LICENSE_1_0.txt boost)
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL Linux)
-	list(APPEND LICENSE_FILES_PATHS /usr/share/licenses/boost/LICENSE_1_0.txt boost)
-endif()
+list(APPEND LICENSE_FILES_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/licenses/LICENSE_1_0.txt boost)
 
 embed_resources(RESOURCES ${LICENSE_FILES_PATHS})
 

@@ -66,6 +66,7 @@
 //---- Define constructor and implicit cast operators to convert back<>forth between your math types and ImVec2/ImVec4.
 // This will be inlined as part of ImVec2 and ImVec4 class declarations.
 
+#include <epoxy/gl.h>
 #include <glm/glm.hpp>
 
 #define IM_VEC2_CLASS_EXTRA                                                 \

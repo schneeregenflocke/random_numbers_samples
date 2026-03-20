@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cmake -B build -S .)",
+      "Read(//usr/share/licenses/**)",
+      "Bash(pacman -Ql boost)",
+      "Read(//usr/**)",
+      "Bash(find /usr -name LICENSE_1_0*)",
+      "Bash(find /usr/include/boost -name LICENSE* -o -name license*)",
+      "Bash(cmake --build build)"
+    ]
+  }
+}

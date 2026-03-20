@@ -219,9 +219,7 @@ private:
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
 
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//param1 = std::clamp(param1, param0 + 1, std::numeric_limits<result_t>::max());
 		//_STL_ASSERT(_Min0 <= _Max0, "invalid min and max arguments for uniform_int");
@@ -242,9 +240,7 @@ private:
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
 
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//float add = std::nextafter(param0, std::numeric_limits<float>::max());
 		//_STL_ASSERT(_Min0 <= _Max0 && (0 <= _Min0 || _Max0 <= _Min0 + (numeric_limits<_Ty>::max)()),
@@ -264,9 +260,7 @@ private:
 		{
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<double>(parameters[0]);
-			Dummy::param_type param_package;
-			param_package._Init(param0);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0));
 		}
 		//_STL_ASSERT(0.0 <= _P0 && _P0 <= 1.0, "invalid probability argument for bernoulli_distribution");
 	}
@@ -285,9 +279,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<double>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 <= _T0, "invalid max argument for binomial_distribution");
 		//_STL_ASSERT(0.0 <= _P0 && _P0 <= 1.0, "invalid probability argument for binomial_distribution");
@@ -307,9 +299,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<double>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 < _K0, "invalid max argument for "
 		//	"negative_binomial_distribution");
@@ -330,9 +320,7 @@ private:
 		{
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<double>(parameters[0]);
-			Dummy::param_type param_package;
-			param_package._Init(param0);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0));
 		}
 		//_STL_ASSERT(0.0 < _P0 && _P0 < 1.0, "invalid probability argument for geometric_distribution");
 	}
@@ -350,9 +338,7 @@ private:
 		{
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<double>(parameters[0]);
-			Dummy::param_type param_package;
-			param_package._Init(param0);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0));
 		}
 		//_STL_ASSERT(0.0 < _Mean0, "invalid mean argument for poisson_distribution");
 	}
@@ -370,9 +356,7 @@ private:
 		{
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
-			Dummy::param_type param_package;
-			param_package._Init(param0);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0));
 		}
 		//_STL_ASSERT(0.0 < _Lambda0, "invalid lambda argument for exponential_distribution");
 	}
@@ -391,9 +375,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 < _Alpha0, "invalid alpha argument for gamma_distribution");
 		//_STL_ASSERT(0.0 < _Beta0, "invalid beta argument for gamma_distribution");
@@ -413,9 +395,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 < _A0, "invalid a argument for weibull_distribution");
 		//_STL_ASSERT(0.0 < _B0, "invalid b argument for weibull_distribution");
@@ -435,9 +415,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 < _B0, "invalid b argument for extreme_value_distribution");
 	}
@@ -456,9 +434,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 < _Sigma0, "invalid sigma argument for normal_distribution");
 	}
@@ -477,9 +453,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 < _S0, "invalid s argument for lognormal_distribution");
 	}
@@ -497,9 +471,7 @@ private:
 		{
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
-			Dummy::param_type param_package;
-			param_package._Init(param0);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0));
 		}
 		// _STL_ASSERT(0 < _N0, "invalid n argument for chi_squared_distribution");
 	}
@@ -518,9 +490,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0.0 < _B0, "invalid b argument for cauchy_distribution");
 	}
@@ -539,9 +509,7 @@ private:
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
 			auto param1 = std::any_cast<ResultTy>(parameters[1]);
-			Dummy::param_type param_package;
-			param_package._Init(param0, param1);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0, param1));
 		}
 		//_STL_ASSERT(0 < _M0, "invalid m argument for fisher_f_distribution");
 		//_STL_ASSERT(0 < _N0, "invalid n argument for fisher_f_distribution");
@@ -560,9 +528,7 @@ private:
 		{
 			auto parameters = GetParameters();
 			auto param0 = std::any_cast<ResultTy>(parameters[0]);
-			Dummy::param_type param_package;
-			param_package._Init(param0);
-			random_distribution.param(param_package);
+			random_distribution.param(typename Dummy::param_type(param0));
 		}
 		//_STL_ASSERT(0 < _N0, "invalid n argument for student_t_distribution");
 	}
@@ -579,26 +545,26 @@ public:
 	using IntegerTy = int;
 
 	
-	using sampler_t00 = typename SamplingManager<std::uniform_int_distribution<IntegerTy>, RationalTy>;
-	using sampler_t01 = typename SamplingManager<std::uniform_real_distribution<RationalTy>, RationalTy>;
+	using sampler_t00 = SamplingManager<std::uniform_int_distribution<IntegerTy>, RationalTy>;
+	using sampler_t01 = SamplingManager<std::uniform_real_distribution<RationalTy>, RationalTy>;
 
-	using sampler_t02 = typename SamplingManager<std::bernoulli_distribution, RationalTy>;
-	using sampler_t03 = typename SamplingManager<std::binomial_distribution<IntegerTy>, RationalTy>;
-	using sampler_t04 = typename SamplingManager<std::negative_binomial_distribution<IntegerTy>, RationalTy>;
-	using sampler_t05 = typename SamplingManager<std::geometric_distribution<IntegerTy>, RationalTy>;
+	using sampler_t02 = SamplingManager<std::bernoulli_distribution, RationalTy>;
+	using sampler_t03 = SamplingManager<std::binomial_distribution<IntegerTy>, RationalTy>;
+	using sampler_t04 = SamplingManager<std::negative_binomial_distribution<IntegerTy>, RationalTy>;
+	using sampler_t05 = SamplingManager<std::geometric_distribution<IntegerTy>, RationalTy>;
 
-	using sampler_t06 = typename SamplingManager<std::poisson_distribution<IntegerTy>, RationalTy>;
-	using sampler_t07 = typename SamplingManager<std::exponential_distribution<RationalTy>, RationalTy>;
-	using sampler_t08 = typename SamplingManager<std::gamma_distribution<RationalTy>, RationalTy>;
-	using sampler_t09 = typename SamplingManager<std::weibull_distribution<RationalTy>, RationalTy>;
-	using sampler_t10 = typename SamplingManager<std::extreme_value_distribution<RationalTy>, RationalTy>;
+	using sampler_t06 = SamplingManager<std::poisson_distribution<IntegerTy>, RationalTy>;
+	using sampler_t07 = SamplingManager<std::exponential_distribution<RationalTy>, RationalTy>;
+	using sampler_t08 = SamplingManager<std::gamma_distribution<RationalTy>, RationalTy>;
+	using sampler_t09 = SamplingManager<std::weibull_distribution<RationalTy>, RationalTy>;
+	using sampler_t10 = SamplingManager<std::extreme_value_distribution<RationalTy>, RationalTy>;
 
-	using sampler_t11 = typename SamplingManager<std::normal_distribution<RationalTy>, RationalTy>;
-	using sampler_t12 = typename SamplingManager<std::lognormal_distribution<RationalTy>, RationalTy>;
-	using sampler_t13 = typename SamplingManager<std::chi_squared_distribution<RationalTy>, RationalTy>;
-	using sampler_t14 = typename SamplingManager<std::cauchy_distribution<RationalTy>, RationalTy>;
-	using sampler_t15 = typename SamplingManager<std::fisher_f_distribution<RationalTy>, RationalTy>;
-	using sampler_t16 = typename SamplingManager<std::student_t_distribution<RationalTy>, RationalTy>;
+	using sampler_t11 = SamplingManager<std::normal_distribution<RationalTy>, RationalTy>;
+	using sampler_t12 = SamplingManager<std::lognormal_distribution<RationalTy>, RationalTy>;
+	using sampler_t13 = SamplingManager<std::chi_squared_distribution<RationalTy>, RationalTy>;
+	using sampler_t14 = SamplingManager<std::cauchy_distribution<RationalTy>, RationalTy>;
+	using sampler_t15 = SamplingManager<std::fisher_f_distribution<RationalTy>, RationalTy>;
+	using sampler_t16 = SamplingManager<std::student_t_distribution<RationalTy>, RationalTy>;
 	
 
 	SamplerCollection()
