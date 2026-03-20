@@ -21,7 +21,7 @@ See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 
 #pragma once
 
-#include <glad/glad.h>
+#include <epoxy/gl.h>
 #include <GLFW/glfw3.h>
 
 #include <iostream>
@@ -49,8 +49,6 @@ public:
 
 		glfwMakeContextCurrent(window);
 		glfwSwapInterval(1);
-
-		int glad_load = gladLoadGLLoader((GLADloadproc)glfwGetProcAddress);
 
 		std::array<float, 4> clear_color{ 0.45f, 0.55f, 0.60f, 1.00 };
 		glClearColor(clear_color[0], clear_color[1], clear_color[2], clear_color[3]);

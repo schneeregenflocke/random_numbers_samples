@@ -38,38 +38,35 @@ namespace math = boost::math;
 #include <algorithm>
 #include <random>
 
-// Finde die Verteilung der Längen der anhand der t-Verteilung berechneten Konfidenzintervalle einer Normalverteilung in %
-// im Verhältnis zur Länge der Konfidenzintervalle berechnet anhand der Normalverteilung (bei gegebener Varianz)
+// Finde die Verteilung der Lï¿½ngen der anhand der t-Verteilung berechneten Konfidenzintervalle einer Normalverteilung in %
+// im Verhï¿½ltnis zur Lï¿½nge der Konfidenzintervalle berechnet anhand der Normalverteilung (bei gegebener Varianz)
 // Finde die Verteilung der wahren Werte auf Konfidenzintervallen
-// Vergleiche die Verteilung von Mittelwerten der geometrischen und der (abhängigen) bernoullischen Verteilung
+// Vergleiche die Verteilung von Mittelwerten der geometrischen und der (abhï¿½ngigen) bernoullischen Verteilung
 
 
 int main(int argc, char *argv[])
 {
 	////////////////////////////////////////////////////////////////////////////////
 	
-	std::vector<std::array<std::string, 2>> licenses(7);
-	
+	std::vector<std::array<std::string, 2>> licenses(6);
+
 	licenses[0][0] = "random_samples";
 	licenses[0][1] = LOAD_RESOURCE(random_samples_LICENSE).toString();
 
 	licenses[1][0] = "boost";
 	licenses[1][1] = LOAD_RESOURCE(boost_LICENSE_1_0).toString();
 
-	licenses[2][0] = "glad";
-	licenses[2][1] = LOAD_RESOURCE(glad_LICENSE).toString();
+	licenses[2][0] = "glfw";
+	licenses[2][1] = LOAD_RESOURCE(glfw_LICENSE).toString();
 
-	licenses[3][0] = "glfw";
-	licenses[3][1] = LOAD_RESOURCE(glfw_LICENSE).toString();
+	licenses[3][0] = "dear imgui";
+	licenses[3][1] = LOAD_RESOURCE(imgui_LICENSE).toString();
 
-	licenses[4][0] = "dear imgui";
-	licenses[4][1] = LOAD_RESOURCE(imgui_LICENSE).toString();
+	licenses[4][0] = "glm";
+	licenses[4][1] = LOAD_RESOURCE(glm_copying).toString();
 
-	licenses[5][0] = "glm";
-	licenses[5][1] = LOAD_RESOURCE(glm_copying).toString();
-
-	licenses[6][0] = "embed-resource";
-	licenses[6][1] = LOAD_RESOURCE(embed_resource_LICENSE).toString();
+	licenses[5][0] = "embed-resource";
+	licenses[5][1] = LOAD_RESOURCE(embed_resource_LICENSE).toString();
 	
 	////////////////////////////////////////////////////////////////////////////////
 

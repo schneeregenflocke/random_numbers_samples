@@ -35,11 +35,13 @@ target_sources(${PROJECT_NAME} PRIVATE
 )
 
 
-# glad
+# libepoxy
 
-set(GLAD_PROFILE "core" CACHE STRING "OpenGL profile" FORCE)
-add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/submodules/glad)
-target_link_libraries(${PROJECT_NAME} PRIVATE glad)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(EPOXY REQUIRED epoxy)
+target_include_directories(${PROJECT_NAME} PRIVATE ${EPOXY_INCLUDE_DIRS})
+target_link_libraries(${PROJECT_NAME} PRIVATE ${EPOXY_LIBRARIES})
+target_compile_definitions(${PROJECT_NAME} PRIVATE IMGUI_IMPL_OPENGL_LOADER_CUSTOM=<epoxy/gl.h>)
 
 
 # glm
@@ -86,7 +88,6 @@ add_subdirectory(${CMAKE_CURRENT_SOURCE_DIR}/submodules/embed-resource)
 
 list(APPEND LICENSE_FILES_PATHS
 	${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.txt random_samples
-	${CMAKE_CURRENT_SOURCE_DIR}/submodules/glad/LICENSE glad
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/glfw/LICENSE.md glfw
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/imgui/LICENSE.txt imgui
 	${CMAKE_CURRENT_SOURCE_DIR}/submodules/glm/copying.txt glm
