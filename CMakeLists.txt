@@ -100,3 +100,26 @@ list(APPEND LICENSE_FILES_PATHS ${CMAKE_CURRENT_SOURCE_DIR}/licenses/LICENSE_1_0
 embed_resources(RESOURCES ${LICENSE_FILES_PATHS})
 
 target_sources(${PROJECT_NAME} PRIVATE ${RESOURCES})
+
+
+# Doxygen
+
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+if(DOXYGEN_FOUND)
+  set(DOXYGEN_PROJECT_NAME            ${PROJECT_NAME})
+  set(DOXYGEN_PROJECT_BRIEF           "Interactive visualization of random samples and their statistical properties")
+  set(DOXYGEN_OUTPUT_DIRECTORY        ${CMAKE_CURRENT_SOURCE_DIR}/docs)
+  set(DOXYGEN_GENERATE_HTML           YES)
+  set(DOXYGEN_GENERATE_LATEX          NO)
+  set(DOXYGEN_EXTRACT_ALL             YES)
+  set(DOXYGEN_EXTRACT_PRIVATE         YES)
+  set(DOXYGEN_EXTRACT_STATIC          YES)
+  set(DOXYGEN_GENERATE_TREEVIEW       YES)
+  set(DOXYGEN_JAVADOC_AUTOBRIEF       YES)
+  set(DOXYGEN_QUIET                   YES)
+
+  doxygen_add_docs(docs
+    ${CMAKE_CURRENT_SOURCE_DIR}/src
+    COMMENT "Generating HTML documentation"
+  )
+endif()

@@ -21,74 +21,63 @@ See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 
 #pragma once
 
-#include <iostream>
-#include <string>
+#include <filesystem>
 #include <fstream>
 #include <iomanip>
-#include <filesystem>
+#include <iostream>
+#include <string>
 
-
-
-
-class FileOutput
-{
+/// @brief RAII wrapper around std::ofstream for writing tab-delimited output.
+///
+/// The file is opened in truncate mode with maximum double precision on construction
+/// and closed automatically on destruction. The stream insertion operator forwards
+/// to the underlying file stream.
+class FileOutput {
 public:
-	
-	FileOutput(const std::string& name) :
-		filepath(name)
-	{
-		file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
-		OpenFile();
-	}
+  /// @brief Opens the file at the given path for writing.
+  /// @param name Path to the output file.
+  FileOutput(const std::string &name) : filepath(name)
+  {
+    file.exceptions(std::ofstream::failbit | std::ofstream::badbit);
+    OpenFile();
+  }
 
-	~FileOutput()
-	{
-		Close();
-	}
+  /// @brief Closes the file on destruction.
+  ~FileOutput() { Close(); }
 
-	template<typename T> 
-	std::ofstream& operator<<(const T& value)
-	{
-		file << value;
-		return file;
-	}
+  /// @brief Writes a value to the file and returns the underlying stream.
+  template <typename T> std::ofstream &operator<<(const T &value)
+  {
+    file << value;
+    return file;
+  }
 
-	void Close()
-	{
-		try
-		{
-			file.close();
-		}
-		catch (std::ofstream::failure& e)
-		{
-			std::cerr << e.what() << '\n';
-		}
-	}
+  /// @brief Explicitly closes the file (also called by the destructor).
+  void Close()
+  {
+    try {
+      file.close();
+    } catch (std::ofstream::failure &e) {
+      std::cerr << e.what() << '\n';
+    }
+  }
 
-	std::filesystem::path GetFilepath()
-	{
-		return filepath.filename();
-	}
+  /// @brief Returns the filename (without directory) of the opened file.
+  std::filesystem::path GetFilepath() { return filepath.filename(); }
 
 private:
+  template <typename T = double> void OpenFile()
+  {
+    try {
+      file.open(filepath, std::ios::trunc);
 
-	template<typename T = double> 
-	void OpenFile()
-	{
-		try
-		{
-			file.open(filepath, std::ios::trunc);
+      file << std::fixed;
+      file << std::setprecision(std::numeric_limits<T>::digits10);
+    } catch (std::ofstream::failure &e) {
+      std::cerr << e.what() << '\n';
+    }
+  }
 
-			file << std::fixed;
-			file << std::setprecision(std::numeric_limits<T>::digits10);
-		}
-		catch (std::ofstream::failure& e)
-		{
-			std::cerr << e.what() << '\n';
-		}
-	}
-	
-	std::filesystem::path filepath;
-	std::ofstream file;
+  std::filesystem::path filepath;
+  std::ofstream file;
 };
-

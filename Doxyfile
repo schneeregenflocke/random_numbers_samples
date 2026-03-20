@@ -1,0 +1,17 @@
+PROJECT_NAME           = "random_numbers_samples"
+PROJECT_BRIEF          = "Interactive visualization of random samples and their statistical properties"
+OUTPUT_DIRECTORY       = docs
+INPUT                  = src/
+FILE_PATTERNS          = *.h *.cpp
+RECURSIVE              = NO
+GENERATE_HTML          = YES
+GENERATE_LATEX         = NO
+EXTRACT_ALL            = YES
+EXTRACT_PRIVATE        = YES
+EXTRACT_STATIC         = YES
+QUIET                  = YES
+WARNINGS               = YES
+WARN_IF_UNDOCUMENTED   = YES
+HTML_OUTPUT            = html
+GENERATE_TREEVIEW      = YES
+JAVADOC_AUTOBRIEF      = YES
