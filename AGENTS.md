@@ -194,5 +194,6 @@ pkill -f random_numbers_samples
   den gespeicherten Pfad aus der Ausgabe (`Saving in: ...`) direkt verwenden, nicht auf den
   Prozess warten.
 - `pkill random_numbers_samples` schlägt fehl (Name > 15 Zeichen) — stattdessen `pkill -f random_numbers_samples` verwenden.
-- Der `[workspace:N]`-Dispatch in `hyprctl dispatch exec` platziert das Fenster nicht zuverlässig
-  auf dem gewünschten Workspace; `movetoworkspacesilent` nach dem Start ist stabiler.
+- Der `[workspace:N]`-Dispatch in `hyprctl dispatch exec` funktioniert, aber `hyprctl dispatch workspace 9`
+  verschiebt dabei auch das VS Code-Fenster mit — Eingaben während des Workspace-Wechsels stören den
+  Ablauf. Stabilere Alternative (z.B. mit anderen Tools) noch offen.
