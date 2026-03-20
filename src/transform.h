@@ -91,7 +91,7 @@ public:
     float scaled_y_axis_begin = ScaleYToCanvas(axes[2]);
 
     float axes_x_gap = plot_rect.l() - canvas_rect.l();
-    float axes_y_gap = std::abs(plot_rect.r() - canvas_rect.r());
+    float axes_y_gap = std::abs(canvas_rect.b() - plot_rect.b());
 
     glm::vec2 result;
     result.x = origin.x + axes_x_gap - scaled_x_axis_begin + scaled_point.x;

@@ -22,8 +22,9 @@ See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 #ifndef RANDOM_SAMPLES_GLFW_INCLUDE_H
 #define RANDOM_SAMPLES_GLFW_INCLUDE_H
 
-#include <GLFW/glfw3.h>
 #include <epoxy/gl.h>
+#define GLFW_INCLUDE_NONE
+#include <GLFW/glfw3.h>
 
 #include <array>
 #include <iostream>

@@ -155,3 +155,44 @@ Beispiel — obere linke Ecke (Waybar-Uhr, 200x35 Pixel):
 magick /home/titan99/Bilder/Bildschirmfotos/2026-03-16-130707_hyprshot.png -crop 200x35+0+0 /tmp/clock_crop.png
 ```
 Hinweis: `convert` ist in ImageMagick v7 veraltet — stattdessen `magick` verwenden.
+
+### Screenshot nur vom Applikationsfenster
+
+`hyprshot -m window` erfordert Mausinteraktion und ist nicht automatisierbar. Die zuverlässige
+Alternative: App in einen leeren Workspace verschieben, dort den vollen Monitor-Screenshot aufnehmen
+und anschliessend die Waybar wegcroppen.
+
+**Ablauf:**
+
+```bash
+# 1. Alte Instanzen beenden
+pkill -f random_numbers_samples
+
+# 2. Neue Instanz starten (landet auf Workspace 3)
+./build/random_numbers_samples &
+sleep 3
+
+# 3. Fenster in leeren Workspace verschieben (z.B. 9)
+hyprctl dispatch movetoworkspacesilent "9,title:random_samples"
+
+# 4. Zu Workspace 9 wechseln
+hyprctl dispatch workspace 9
+sleep 1
+
+# 5. Screenshot aufnehmen
+hyprshot -m output -m eDP-1
+
+# 6. Waybar (30 px logisch = 36 px physisch bei Scale 1.2) wegcroppen
+magick <screenshot.png> -crop 1913x1037+4+40 /tmp/app_window.png
+
+# 7. App beenden
+pkill -f random_numbers_samples
+```
+
+**Bekannte Einschränkungen:**
+- `hyprshot` läuft manchmal im Hintergrund weiter, auch wenn der Screenshot gespeichert wurde —
+  den gespeicherten Pfad aus der Ausgabe (`Saving in: ...`) direkt verwenden, nicht auf den
+  Prozess warten.
+- `pkill random_numbers_samples` schlägt fehl (Name > 15 Zeichen) — stattdessen `pkill -f random_numbers_samples` verwenden.
+- Der `[workspace:N]`-Dispatch in `hyprctl dispatch exec` platziert das Fenster nicht zuverlässig
+  auf dem gewünschten Workspace; `movetoworkspacesilent` nach dem Start ist stabiler.

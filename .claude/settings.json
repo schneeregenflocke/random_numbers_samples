@@ -18,7 +18,21 @@
       "Bash(doxygen --version)",
       "Bash(clang-tidy --version)",
       "Bash(clang-tidy -p build/compile_commands.json src/script.cpp)",
-      "Bash(clang-tidy -p build/compile_commands.json --header-filter='src/.*' src/script.cpp)"
+      "Bash(clang-tidy -p build/compile_commands.json --header-filter='src/.*' src/script.cpp)",
+      "Bash(hyprshot -m output -m active -d)",
+      "Bash(hyprshot -m window --window random_samples -d)",
+      "Bash(hyprctl clients:*)",
+      "Bash(hyprshot -m window --window-title \"random_samples\" -d)",
+      "Bash(magick /home/titan99/Bilder/Bildschirmfotos/2026-03-20-203856_hyprshot.png -crop 953x1037+964+40 /tmp/app_window.png)",
+      "Read(//tmp/**)",
+      "Bash(hyprctl workspaces:*)",
+      "Bash(hyprctl dispatch:*)",
+      "Bash(hyprshot -m output -m eDP-1 -d)",
+      "Bash(magick /home/titan99/Bilder/Bildschirmfotos/2026-03-20-204729_hyprshot.png -crop 1913x1037+4+40 /tmp/app_ws9.png)",
+      "Bash(pkill random_numbers_samples)",
+      "Bash(hyprshot -m output -m eDP-1)",
+      "Bash(magick /home/titan99/Bilder/Bildschirmfotos/2026-03-20-210532_hyprshot.png -crop 1913x1037+4+40 /tmp/app_fixed.png)",
+      "Bash(pkill -f random_numbers_samples)"
     ]
   }
 }

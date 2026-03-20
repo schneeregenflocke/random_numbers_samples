@@ -118,7 +118,7 @@ if(DOXYGEN_FOUND)
   set(DOXYGEN_JAVADOC_AUTOBRIEF       YES)
   set(DOXYGEN_QUIET                   YES)
 
-  doxygen_add_docs(docs
+  doxygen_add_docs(doxygen
     ${CMAKE_CURRENT_SOURCE_DIR}/src
     COMMENT "Generating HTML documentation"
   )
