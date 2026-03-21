@@ -44,13 +44,17 @@ See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 #include <boost/math/distributions/normal.hpp>
 namespace math = boost::math;
 
+#include <epoxy/gl.h>
+
 #include <any>
 #include <array>
 #include <cstddef>
 #include <cstdlib>
+#include <exception>
 #include <format>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 // Finde die Verteilung der Laengen der anhand der t-Verteilung berechneten
@@ -137,10 +141,10 @@ try
   style.ItemSpacing = ImVec2(kItemSpacing, kItemSpacing);
 
   ImGui_ImplGlfw_InitForOpenGL(glfw_interface.GetWindow(), true);
-  ImGui_ImplOpenGL3_Init(glfw_interface.GetGLSLVersion().c_str());
+  ImGui_ImplOpenGL3_Init(GLFW_Interface::GetGLSLVersion().c_str());
 
-  GLint sample_buffers = 0;
-  glGetIntegerv(GL_SAMPLES, &sample_buffers);
+  GLint sample_buffers = 0; // NOLINT(misc-include-cleaner)
+  glGetIntegerv(GL_SAMPLES, &sample_buffers); // NOLINT(misc-include-cleaner)
 
   ////////////////////////////////////////////////////////////////////////////////
 
@@ -201,7 +205,7 @@ try
 
       if (ImGui::BeginCombo("Random Distribution",
                             distribution_combo_label.c_str())) {
-        for (int index = 0; index < static_cast<int>(sampler_collection.GetSize()); ++index) {
+        for (int index = 0; std::cmp_less(index, sampler_collection.GetSize()); ++index) {
           const bool is_selected = (random_distribution_index == index);
 
           if (ImGui::Selectable(sampler_collection.GetName(index).c_str(),
@@ -333,7 +337,7 @@ try
 
       if (ImGui::BeginCombo("sample function results",
                             sample_function_combo_label.c_str())) {
-        for (int index = 0; index < static_cast<int>(sample_function_names.size()); ++index) {
+        for (int index = 0; std::cmp_less(index, sample_function_names.size()); ++index) {
           const bool is_selected = (sample_functions_index == index);
 
           if (ImGui::Selectable(
@@ -415,7 +419,7 @@ try
 
     ImGui::SetNextItemOpen(true, ImGuiCond_Once);
     if (ImGui::CollapsingHeader("Colors")) {
-      const ImGuiColorEditFlags color_edit_flags =
+      const auto color_edit_flags =
           static_cast<ImGuiColorEditFlags>( // NOLINT(hicpp-signed-bitwise)
               static_cast<unsigned>(ImGuiColorEditFlags_NoInputs) |
               static_cast<unsigned>(ImGuiColorEditFlags_AlphaBar) |
@@ -488,7 +492,7 @@ try
     ////////////////////////////////////////////////////////////////////////////////
 
     ImGui::Render();
-    glfw_interface.Clear();
+    GLFW_Interface::Clear();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfw_interface.SwapBuffers();
   }
