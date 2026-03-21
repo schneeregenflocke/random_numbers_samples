@@ -1,31 +1,9 @@
-/*
-random_samples
-Copyright(c) 2020 Marco Peyer
-
-This program is free software; you can redistribute itand /or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110 - 1301 USA.
-
-See <https://www.gnu.org/licenses/gpl-2.0.txt>.
-*/
-
 #pragma once
-
-#include <imgui.h>
 
 #include <array>
 #include <cmath>
 #include <exception>
+#include <imgui.h>
 #include <initializer_list>
 #include <stdexcept>
 
@@ -42,7 +20,7 @@ public:
   rect4() : edges{0, 0, 0, 0} {}
 
   /// @brief Constructs from a 4-element array {l, b, r, t}.
-  rect4(const std::array<Ty, 4> &edges) : edges(edges) {}
+  explicit rect4(const std::array<Ty, 4> &edges) : edges(edges) {}
 
   /// @brief Constructs from explicit left, bottom, right, top values.
   // left, bottom, right, top
@@ -108,12 +86,13 @@ public:
   }
 
   /// @brief Returns the rectangle width (r - l).
-  /// @param use_abs If true, returns the absolute value; otherwise throws if l > r.
+  /// @param use_abs If true, returns the absolute value; otherwise throws if l
+  /// > r.
   Ty width(const bool use_abs = false) const
   {
     Ty width = 0;
 
-    if (use_abs == false) {
+    if (!use_abs) {
       if (l() > r()) {
         throw std::logic_error("left > right");
       }
@@ -121,7 +100,7 @@ public:
       width = r() - l();
     }
 
-    if (use_abs == true) {
+    if (use_abs) {
       width = std::abs(r() - l());
     }
 
@@ -129,12 +108,13 @@ public:
   }
 
   /// @brief Returns the rectangle height (t - b).
-  /// @param use_abs If true, returns the absolute value; otherwise throws if b > t.
+  /// @param use_abs If true, returns the absolute value; otherwise throws if b
+  /// > t.
   Ty height(const bool use_abs = false) const
   {
     Ty height = 0;
 
-    if (use_abs == false) {
+    if (!use_abs) {
       if (b() > t()) {
         throw std::logic_error("bottom > top");
       }
@@ -142,7 +122,7 @@ public:
       height = t() - b();
     }
 
-    if (use_abs == true) {
+    if (use_abs) {
       height = std::abs(t() - b());
     }
 
@@ -157,7 +137,8 @@ public:
   }
 
   /// @brief Returns a new rectangle expanded outward by the given margins.
-  /// @param expand Margins to add: l/b expand left/bottom outward, r/t expand right/top outward.
+  /// @param expand Margins to add: l/b expand left/bottom outward, r/t expand
+  /// right/top outward.
   rect4 expand(const rect4 &expand) const
   {
     rect4 expanded;
@@ -233,7 +214,8 @@ public:
   /// @brief Constructs from a 4-element array.
   val4(const std::array<Ty, 4> &val) : val(val) {}
 
-  /// @brief Returns the span between two indexed elements (val[to] - val[from]).
+  /// @brief Returns the span between two indexed elements (val[to] -
+  /// val[from]).
   /// @param from Index of the start element.
   /// @param to   Index of the end element.
   Ty Lenght(const size_t from, const size_t to) const

@@ -32,7 +32,24 @@
       "Bash(pkill random_numbers_samples)",
       "Bash(hyprshot -m output -m eDP-1)",
       "Bash(magick /home/titan99/Bilder/Bildschirmfotos/2026-03-20-210532_hyprshot.png -crop 1913x1037+4+40 /tmp/app_fixed.png)",
-      "Bash(pkill -f random_numbers_samples)"
+      "Bash(pkill -f random_numbers_samples)",
+      "Bash(ls build*)",
+      "Bash(clang-tidy -p build src/glfw_include.h src/random_data_table.h src/random_samples.h src/transform.h)",
+      "Bash(grep -v \"^$\")",
+      "Bash(clang-tidy -p build -checks='llvm-header-guard,portability-avoid-pragma-once' --fix src/random_data_table.h)",
+      "Bash(git restore:*)",
+      "Bash(ls src/*.cpp src/*.h)",
+      "Bash(grep -n \"transform_coordinate_system\\\\|GetScrolledAxes\\\\|GetTransformedCoordianteSystem\" src/*.h src/*.cpp)",
+      "Bash(cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DCMAKE_BUILD_TYPE=Debug)",
+      "Bash(clang-tidy -p build src/glfw_include.h src/random_samples.h)",
+      "Bash(cp src/glfw_include.h /tmp/glfw_include.h.bak)",
+      "Bash(cp src/random_samples.h /tmp/random_samples.h.bak)",
+      "Bash(clang-tidy -p build --fix src/glfw_include.h)",
+      "Bash(clang-tidy -p build --fix src/random_samples.h)",
+      "Bash(clang-tidy -p build --fix-errors src/random_samples.h)",
+      "Bash(cmake --build build --clean-first)",
+      "Bash(cp src/glfw_include.h /tmp/glfw_test.h)",
+      "Bash(clang-tidy -p build --fix /tmp/glfw_test.h)"
     ]
   }
 }

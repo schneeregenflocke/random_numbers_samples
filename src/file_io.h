@@ -1,24 +1,3 @@
-/*
-random_samples
-Copyright(c) 2020 Marco Peyer
-
-This program is free software; you can redistribute itand /or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110 - 1301 USA.
-
-See <https://www.gnu.org/licenses/gpl-2.0.txt>.
-*/
-
 #ifndef RANDOM_SAMPLES_FILE_IO_H
 #define RANDOM_SAMPLES_FILE_IO_H
 
@@ -30,9 +9,9 @@ See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 
 /// @brief RAII wrapper around std::ofstream for writing tab-delimited output.
 ///
-/// The file is opened in truncate mode with maximum double precision on construction
-/// and closed automatically on destruction. The stream insertion operator forwards
-/// to the underlying file stream.
+/// The file is opened in truncate mode with maximum double precision on
+/// construction and closed automatically on destruction. The stream insertion
+/// operator forwards to the underlying file stream.
 class FileOutput {
 public:
   /// @brief Opens the file at the given path for writing.

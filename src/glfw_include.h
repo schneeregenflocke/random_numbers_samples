@@ -1,37 +1,17 @@
-/*
-random_samples
-Copyright(c) 2020 Marco Peyer
+#ifndef HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_GLFW_INCLUDE_H
+#define HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_GLFW_INCLUDE_H
 
-This program is free software; you can redistribute itand /or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110 - 1301 USA.
-
-See <https://www.gnu.org/licenses/gpl-2.0.txt>.
-*/
-
-#ifndef RANDOM_SAMPLES_GLFW_INCLUDE_H
-#define RANDOM_SAMPLES_GLFW_INCLUDE_H
-
-#include <epoxy/gl.h>
 #define GLFW_INCLUDE_NONE
-#include <GLFW/glfw3.h>
 
+#include <GLFW/glfw3.h>
 #include <array>
+#include <epoxy/gl.h>
+#include <epoxy/gl_generated.h>
 #include <iostream>
 #include <string>
-#include <utility>
 
-/// @brief Manages GLFW window creation, OpenGL context setup and the main loop lifecycle.
+/// @brief Manages GLFW window creation, OpenGL context setup and the main loop
+/// lifecycle.
 ///
 /// Initialises GLFW, requests an OpenGL 4.5 Core Profile context, sets the
 /// clear colour, and provides helpers for polling events, clearing the
@@ -81,12 +61,10 @@ public:
     glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, static_cast<int>(true));
 
     glfwWindowHint(GLFW_SAMPLES, msaa_samples);
-
-    // glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-    // glfwWindowHint(GLFW_MAXIMIZED, true);
   }
 
-  /// @brief Returns the GLSL version string required by the ImGui OpenGL3 backend.
+  /// @brief Returns the GLSL version string required by the ImGui OpenGL3
+  /// backend.
   [[nodiscard]] static std::string GetGLSLVersion() { return {"#version 450"}; }
 
   /// @brief Returns the underlying GLFWwindow pointer.
@@ -116,7 +94,8 @@ public:
     return std::array<int, 2>{width, height};
   }
 
-  /// @brief Returns true while the window should stay open; also calls glfwPollEvents().
+  /// @brief Returns true while the window should stay open; also calls
+  /// glfwPollEvents().
   bool Active()
   {
     const bool active = (glfwWindowShouldClose(window) == 0);
@@ -152,4 +131,4 @@ private:
   GLFWwindow *window;
 };
 
-#endif // RANDOM_SAMPLES_GLFW_INCLUDE_H
+#endif // HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_GLFW_INCLUDE_H

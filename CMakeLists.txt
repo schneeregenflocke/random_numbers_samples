@@ -22,7 +22,7 @@ endif()
 target_include_directories(${PROJECT_NAME} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 target_sources(${PROJECT_NAME} PRIVATE
-	${CMAKE_CURRENT_SOURCE_DIR}/src/script.cpp
+	${CMAKE_CURRENT_SOURCE_DIR}/src/main.cpp
 	${CMAKE_CURRENT_SOURCE_DIR}/src/random_samples.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/rect4.h
 	${CMAKE_CURRENT_SOURCE_DIR}/src/transform.h

@@ -1,57 +1,34 @@
-/*
-random_samples
-Copyright(c) 2020 Marco Peyer
-
-This program is free software; you can redistribute itand /or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110 - 1301 USA.
-
-See <https://www.gnu.org/licenses/gpl-2.0.txt>.
-*/
-
-/// @file script.cpp
+/// @file main.cpp
 /// @brief Application entry point.
 ///
 /// Initialises GLFW/OpenGL, sets up the ImGui context, and runs the main render
 /// loop. The loop is split into two ImGui windows:
 ///  - **Plot** (left half): renders the PDF curve and the histogram of the
 ///    currently selected sample function results via Plot.
-///  - **User Input** (right half): exposes controls for the random distribution,
+///  - **User Input** (right half): exposes controls for the random
+///  distribution,
 ///    its parameters, sample count/size, histogram bin count, axis limits and
 ///    colours, plus a collapsible licence viewer.
 
+#include "Resource.h"
 #include "glfw_include.h"
 #include "histogram.h"
 #include "plot.h"
 #include "random_samples.h"
-
-#include <imgui.h>
-#include <imgui_impl_glfw.h>
-#include <imgui_impl_opengl3.h>
-
-#include "Resource.h"
-
-#include <boost/math/distributions/normal.hpp>
-namespace math = boost::math;
-
 #include <any>
 #include <array>
+#include <boost/math/distributions/normal.hpp>
 #include <cstddef>
 #include <cstdlib>
 #include <format>
+#include <imgui.h>
+#include <imgui_impl_glfw.h>
+#include <imgui_impl_opengl3.h>
 #include <iostream>
 #include <string>
 #include <vector>
+
+namespace math = boost::math;
 
 // Finde die Verteilung der Laengen der anhand der t-Verteilung berechneten
 // Konfidenzintervalle einer Normalverteilung in % im Verhaeltnis zur Laenge der
@@ -92,10 +69,8 @@ constexpr float kItemSpacing{8.0F};
 
 } // namespace
 
-int main() // NOLINT(readability-function-cognitive-complexity)
-try
-{
-  ////////////////////////////////////////////////////////////////////////////////
+int main()
+try {
 
   const std::array<std::array<std::string, 2>, 6> licenses{{
       {"random_samples", LOAD_RESOURCE(random_samples_LICENSE).toString()},
@@ -106,8 +81,6 @@ try
       {"embed-resource", LOAD_RESOURCE(embed_resource_LICENSE).toString()},
   }};
 
-  ////////////////////////////////////////////////////////////////////////////////
-
   GLFW_Interface glfw_interface(kWindowWidth, kWindowHeight);
 
   IMGUI_CHECKVERSION();
@@ -115,12 +88,14 @@ try
 
   auto &imgui_io = ImGui::GetIO();
 #ifdef _WIN32
-  if (imgui_io.Fonts->AddFontFromFileTTF("c:/Windows/Fonts/Arial.ttf", kFontSize) == nullptr) {
+  if (imgui_io.Fonts->AddFontFromFileTTF("c:/Windows/Fonts/Arial.ttf",
+                                         kFontSize) == nullptr) {
     imgui_io.Fonts->AddFontDefault();
   }
 #else
   if (imgui_io.Fonts->AddFontFromFileTTF(
-          "/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf", kFontSize) == nullptr) {
+          "/usr/share/fonts/Adwaita/AdwaitaSans-Regular.ttf", kFontSize) ==
+      nullptr) {
     imgui_io.Fonts->AddFontDefault();
   }
 #endif
@@ -137,18 +112,15 @@ try
   style.ItemSpacing = ImVec2(kItemSpacing, kItemSpacing);
 
   ImGui_ImplGlfw_InitForOpenGL(glfw_interface.GetWindow(), true);
-  ImGui_ImplOpenGL3_Init(glfw_interface.GetGLSLVersion().c_str());
+  ImGui_ImplOpenGL3_Init(GLFW_Interface::GetGLSLVersion().c_str());
 
   GLint sample_buffers = 0;
   glGetIntegerv(GL_SAMPLES, &sample_buffers);
-
-  ////////////////////////////////////////////////////////////////////////////////
 
   SamplerCollection sampler_collection;
   Plot plot;
   Histogram plot_histogram;
 
-  ////////////////////////////////////////////////////////////////////////////////
   // some provisional global init variables
 
   int random_distribution_index = kDefaultDistributionIndex;
@@ -162,14 +134,10 @@ try
 
   bool open_all = true;
 
-  ////////////////////////////////////////////////////////////////////////////////
-
   while (glfw_interface.Active() && open_all) {
     ImGui_ImplOpenGL3_NewFrame();
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
-
-    ////////////////////////////////////////////////////////////////////////////////
 
     const auto [fm_width, fm_height] = glfw_interface.GetFrambufferSize();
 
@@ -180,20 +148,22 @@ try
         glm::vec2(static_cast<float>(fm_width) / kHalfDivisor,
                   static_cast<float>(fm_height)),
         ImGuiCond_Always);
-    const auto user_window_flags = static_cast<ImGuiWindowFlags>( // NOLINT(hicpp-signed-bitwise)
-        static_cast<unsigned>(ImGuiWindowFlags_NoSavedSettings) |
-        static_cast<unsigned>(ImGuiWindowFlags_NoMove) |
-        static_cast<unsigned>(ImGuiWindowFlags_NoResize));
+    const auto user_window_flags =
+        static_cast<ImGuiWindowFlags>( // NOLINT(hicpp-signed-bitwise)
+            static_cast<unsigned>(ImGuiWindowFlags_NoSavedSettings) |
+            static_cast<unsigned>(ImGuiWindowFlags_NoMove) |
+            static_cast<unsigned>(ImGuiWindowFlags_NoResize));
     ImGui::Begin("User Input", &open_all, user_window_flags);
 
-    ImGui::TextUnformatted(
-        std::format("{:.2f} ms/frame ({:.2f} FPS)",
-                    kMsPerSecond / imgui_io.Framerate,
-                    imgui_io.Framerate).c_str());
+    ImGui::TextUnformatted(std::format("{:.2f} ms/frame ({:.2f} FPS)",
+                                       kMsPerSecond / imgui_io.Framerate,
+                                       imgui_io.Framerate)
+                               .c_str());
 
     ImGui::SetNextItemOpen(true, ImGuiCond_Once);
     if (ImGui::CollapsingHeader("Random Samples")) {
-      const float item_width = ImGui::GetContentRegionAvail().x * kItemWidthFactor;
+      const float item_width =
+          ImGui::GetContentRegionAvail().x * kItemWidthFactor;
       const float half_avail = ImGui::GetContentRegionAvail().x * kHalfFactor;
 
       const std::string distribution_combo_label =
@@ -201,7 +171,8 @@ try
 
       if (ImGui::BeginCombo("Random Distribution",
                             distribution_combo_label.c_str())) {
-        for (int index = 0; index < static_cast<int>(sampler_collection.GetSize()); ++index) {
+        for (int index = 0;
+             index < static_cast<int>(sampler_collection.GetSize()); ++index) {
           const bool is_selected = (random_distribution_index == index);
 
           if (ImGui::Selectable(sampler_collection.GetName(index).c_str(),
@@ -225,7 +196,7 @@ try
 
       int parameters_changed = 0;
 
-      if (current_parameter_type == integer_2) {
+      if (current_parameter_type == ParameterTypes::integer_2) {
         auto params = current_distribution->GetParameters();
         auto param0 = std::any_cast<int>(params.at(0));
         auto param1 = std::any_cast<int>(params.at(1));
@@ -241,7 +212,7 @@ try
 
         current_distribution->SetParameters<int, int>(param0, param1);
       }
-      if (current_parameter_type == rationale_2) {
+      if (current_parameter_type == ParameterTypes::rationale_2) {
         auto params = current_distribution->GetParameters();
         auto param0 = std::any_cast<float>(params.at(0));
         auto param1 = std::any_cast<float>(params.at(1));
@@ -259,7 +230,7 @@ try
 
         current_distribution->SetParameters<float, float>(param0, param1);
       }
-      if (current_parameter_type == rationale_1) {
+      if (current_parameter_type == ParameterTypes::rationale_1) {
         auto params = current_distribution->GetParameters();
         auto param0 = std::any_cast<float>(params.at(0));
 
@@ -271,7 +242,7 @@ try
         current_distribution->SetParameters<float>(param0);
       }
 
-      if (current_parameter_type == double_1) {
+      if (current_parameter_type == ParameterTypes::double_1) {
         auto params = current_distribution->GetParameters();
         auto param0 = static_cast<float>(std::any_cast<double>(params.at(0)));
 
@@ -284,7 +255,7 @@ try
             static_cast<double>(param0));
       }
 
-      if (current_parameter_type == integer_1_double_1) {
+      if (current_parameter_type == ParameterTypes::integer_1_double_1) {
         auto params = current_distribution->GetParameters();
         auto param0 = std::any_cast<int>(params.at(0));
         auto param1 = static_cast<float>(std::any_cast<double>(params.at(1)));
@@ -306,7 +277,8 @@ try
       bool sampler_config_changed = false;
 
       ImGui::SetNextItemWidth(item_width);
-      if (ImGui::InputInt("number samples", &number_samples, 1, kInputFastStep)) {
+      if (ImGui::InputInt("number samples", &number_samples, 1,
+                          kInputFastStep)) {
         sampler_config_changed = true;
       }
       ImGui::SameLine(half_avail);
@@ -327,13 +299,14 @@ try
           current_distribution->GetSampleFunctionNames();
       std::string sample_function_combo_label = "none";
       if (!sample_function_names.empty()) {
-        sample_function_combo_label =
-            sample_function_names.at(static_cast<size_t>(sample_functions_index));
+        sample_function_combo_label = sample_function_names.at(
+            static_cast<size_t>(sample_functions_index));
       }
 
       if (ImGui::BeginCombo("sample function results",
                             sample_function_combo_label.c_str())) {
-        for (int index = 0; index < static_cast<int>(sample_function_names.size()); ++index) {
+        for (int index = 0;
+             index < static_cast<int>(sample_function_names.size()); ++index) {
           const bool is_selected = (sample_functions_index == index);
 
           if (ImGui::Selectable(
@@ -357,7 +330,8 @@ try
 
     ImGui::SetNextItemOpen(true, ImGuiCond_Once);
     if (ImGui::CollapsingHeader("Histogram")) {
-      const float item_width = ImGui::GetContentRegionAvail().x * kItemWidthFactor;
+      const float item_width =
+          ImGui::GetContentRegionAvail().x * kItemWidthFactor;
 
       auto number_bins = static_cast<int>(plot_histogram.GetNumberBins());
 
@@ -371,28 +345,29 @@ try
     if (ImGui::CollapsingHeader("Axis Limits")) {
       auto axes = plot.GetAxes();
 
-      const float item_width = ImGui::GetContentRegionAvail().x * kItemWidthFactor;
+      const float item_width =
+          ImGui::GetContentRegionAvail().x * kItemWidthFactor;
       const float half_avail = ImGui::GetContentRegionAvail().x * kHalfFactor;
 
       const float input_step = kAxisInputStep;
       const std::string format_string = "%.2f";
 
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("X-Axis Lower Limit", &axes[0], input_step, input_step, // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      ImGui::InputFloat("X-Axis Lower Limit", &axes[0], input_step, input_step,
                         format_string.c_str());
 
       ImGui::SameLine(half_avail);
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("Y-Axis Lower Limit", &axes[2], input_step, input_step, // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      ImGui::InputFloat("Y-Axis Lower Limit", &axes[2], input_step, input_step,
                         format_string.c_str());
 
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("X-Axis Upper Limit", &axes[1], input_step, input_step, // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      ImGui::InputFloat("X-Axis Upper Limit", &axes[1], input_step, input_step,
                         format_string.c_str());
 
       ImGui::SameLine(half_avail);
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("Y-Axis Upper Limit", &axes[3], input_step, input_step, // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      ImGui::InputFloat("Y-Axis Upper Limit", &axes[3], input_step, input_step,
                         format_string.c_str());
 
       plot.SetAxes(axes);
@@ -415,13 +390,12 @@ try
 
     ImGui::SetNextItemOpen(true, ImGuiCond_Once);
     if (ImGui::CollapsingHeader("Colors")) {
-      const ImGuiColorEditFlags color_edit_flags =
-          static_cast<ImGuiColorEditFlags>( // NOLINT(hicpp-signed-bitwise)
-              static_cast<unsigned>(ImGuiColorEditFlags_NoInputs) |
-              static_cast<unsigned>(ImGuiColorEditFlags_AlphaBar) |
-              static_cast<unsigned>(ImGuiColorEditFlags_Float) |
-              static_cast<unsigned>(ImGuiColorEditFlags_DisplayRGB) |
-              static_cast<unsigned>(ImGuiColorEditFlags_InputRGB));
+      const auto color_edit_flags = static_cast<ImGuiColorEditFlags>(
+          static_cast<unsigned>(ImGuiColorEditFlags_NoInputs) |
+          static_cast<unsigned>(ImGuiColorEditFlags_AlphaBar) |
+          static_cast<unsigned>(ImGuiColorEditFlags_Float) |
+          static_cast<unsigned>(ImGuiColorEditFlags_DisplayRGB) |
+          static_cast<unsigned>(ImGuiColorEditFlags_InputRGB));
       ImGui::ColorEdit4("Curve Color", &plot.curve_color.Value.x,
                         color_edit_flags);
       ImGui::ColorEdit4("Histogram Color", &plot.histogram_color.Value.x,
@@ -435,10 +409,9 @@ try
           std::vector<char> license_text(license.at(1).cbegin(),
                                          license.at(1).cend());
 
-          ImGui::InputTextMultiline(
-              (std::string("##") + license.at(0)).c_str(),
-              license_text.data(), license_text.size(), ImVec2(0, 0),
-              ImGuiInputTextFlags_ReadOnly);
+          ImGui::InputTextMultiline((std::string("##") + license.at(0)).c_str(),
+                                    license_text.data(), license_text.size(),
+                                    ImVec2(0, 0), ImGuiInputTextFlags_ReadOnly);
           ImGui::TreePop();
         }
       }
@@ -446,23 +419,20 @@ try
 
     ImGui::End();
 
-    ////////////////////////////////////////////////////////////////////////////////
-
     static const float mean = 0.0F;
     static const float stddev = 1.0F;
     const math::normal_distribution<float> normal_distribution(mean, stddev);
-
-    ////////////////////////////////////////////////////////////////////////////////
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
     ImGui::SetNextWindowSize(
         glm::vec2(static_cast<float>(fm_width) / kHalfDivisor,
                   static_cast<float>(fm_height)),
         ImGuiCond_Always);
-    const auto plot_window_flags = static_cast<ImGuiWindowFlags>( // NOLINT(hicpp-signed-bitwise)
-        static_cast<unsigned>(ImGuiWindowFlags_NoSavedSettings) |
-        static_cast<unsigned>(ImGuiWindowFlags_NoMove) |
-        static_cast<unsigned>(ImGuiWindowFlags_NoResize));
+    const auto plot_window_flags =
+        static_cast<ImGuiWindowFlags>( // NOLINT(hicpp-signed-bitwise)
+            static_cast<unsigned>(ImGuiWindowFlags_NoSavedSettings) |
+            static_cast<unsigned>(ImGuiWindowFlags_NoMove) |
+            static_cast<unsigned>(ImGuiWindowFlags_NoResize));
     ImGui::Begin("Plot", &open_all, plot_window_flags);
 
     plot.SetCanvasRect();
@@ -474,10 +444,9 @@ try
     plot.ProceedGrid();
     plot.SetPlotCurve(normal_distribution);
 
-    auto histogram = plot_histogram.SetHistogram(
-        current_histogram_data,
-        plot.GetScrolledAxes()[0], // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
-        plot.GetScrolledAxes()[1]); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+    auto histogram = plot_histogram.SetHistogram(current_histogram_data,
+                                                 plot.GetScrolledAxes()[0],
+                                                 plot.GetScrolledAxes()[1]);
 
     plot.SetHistogram(histogram);
 
@@ -485,10 +454,8 @@ try
 
     ImGui::End();
 
-    ////////////////////////////////////////////////////////////////////////////////
-
     ImGui::Render();
-    glfw_interface.Clear();
+    GLFW_Interface::Clear();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
     glfw_interface.SwapBuffers();
   }
@@ -500,9 +467,7 @@ try
   glfw_interface.Terminate();
 
   return EXIT_SUCCESS;
-}
-catch (const std::exception &exc)
-{
+} catch (const std::exception &exc) {
   std::cerr << "Fatal error: " << exc.what() << '\n';
   return EXIT_FAILURE;
 }

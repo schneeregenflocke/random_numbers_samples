@@ -1,35 +1,16 @@
-/*
-random_samples
-Copyright(c) 2020 Marco Peyer
-
-This program is free software; you can redistribute itand /or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110 - 1301 USA.
-
-See <https://www.gnu.org/licenses/gpl-2.0.txt>.
-*/
-
 #pragma once
 
 #include "random_numbers.h"
-
+#include <cmath>
+#include <numeric>
 #include <thread>
 #include <variant>
 
 /// @brief Stateless statistical helper functions for a vector of sample values.
 ///
 /// @tparam Ty0 Type of the individual sample values.
-/// @tparam Ty1 Type used for computed results (e.g. float for accumulated sums).
+/// @tparam Ty1 Type used for computed results (e.g. float for accumulated
+/// sums).
 template <typename Ty0, typename Ty1> class SampleFunctions {
 public:
   /// @brief Returns the sum of all sample values.
@@ -65,7 +46,8 @@ public:
 
   /// @brief Returns variance as TSS / sample_size.
   /// @param totalsumofsquares Total sum of squared deviations.
-  /// @param sample_size       Divisor (n for population, n-1 for sample variance).
+  /// @param sample_size       Divisor (n for population, n-1 for sample
+  /// variance).
   Ty1 Variance(Ty1 totalsumofsquares, Ty1 sample_size) const
   {
     return totalsumofsquares / sample_size;
@@ -98,12 +80,13 @@ double>::value>::type> double operator()(const double& variable) const
     }
 };*/
 
-/// @brief Flat 2D table that holds random samples and their statistical summaries.
+/// @brief Flat 2D table that holds random samples and their statistical
+/// summaries.
 ///
-/// The table is laid out as a flat vector of VariantType cells in row-major order.
-/// The first row contains column header strings. Sample columns are followed by
-/// five computed columns: sum, mean, total-sum-of-squares, population variance,
-/// and sample variance (n-1 denominator).
+/// The table is laid out as a flat vector of VariantType cells in row-major
+/// order. The first row contains column header strings. Sample columns are
+/// followed by five computed columns: sum, mean, total-sum-of-squares,
+/// population variance, and sample variance (n-1 denominator).
 ///
 /// GenerateSamples() fills the sample cells in parallel using 12 threads.
 /// CalculateSampleFunctionResults() then computes the five statistics columns.
@@ -126,8 +109,10 @@ public:
     // std::cout << "variable type " << typeid(T).name() << '\n';
   }
 
-  /// @brief Fills all sample cells using the given distribution, parallelised over 12 threads.
-  /// @param random_distribution A `<random>` distribution whose result_type is Ty0.
+  /// @brief Fills all sample cells using the given distribution, parallelised
+  /// over 12 threads.
+  /// @param random_distribution A `<random>` distribution whose result_type is
+  /// Ty0.
   /// @param number_samples      Number of samples (rows) to generate.
   /// @param sample_size         Number of variables per sample (columns).
   template <typename V>
@@ -194,12 +179,13 @@ public:
   }
 
   /// @brief Returns the names of the five computed statistic columns.
-  std::vector<std::string> GetSampleFunctionNames() const
+  [[nodiscard]] std::vector<std::string> GetSampleFunctionNames() const
   {
     return sample_function_names;
   }
 
-  /// @brief Computes the five statistics columns (sum, mean, tss, variance, sample-variance).
+  /// @brief Computes the five statistics columns (sum, mean, tss, variance,
+  /// sample-variance).
   ///
   /// Must be called after GenerateSamples().
   void CalculateSampleFunctionResults()
@@ -273,7 +259,8 @@ public:
     return column_data;
   }
 
-  /// @brief Returns the sample at the given zero-based index as a vector of Ty0 values.
+  /// @brief Returns the sample at the given zero-based index as a vector of Ty0
+  /// values.
   std::vector<Ty0> GetSample(size_t number) const
   {
     number += number_name_rows;
@@ -314,7 +301,8 @@ public:
   /// @brief Returns the total number of rows (header row + sample rows).
   size_t GetNumberRows() const { return number_rows; }
 
-  /// @brief Returns the total number of columns (sample columns + statistics columns).
+  /// @brief Returns the total number of columns (sample columns + statistics
+  /// columns).
   size_t GetNumberColumns() const { return number_columns; }
 
 private:

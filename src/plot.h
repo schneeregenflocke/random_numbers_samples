@@ -1,41 +1,21 @@
-/*
-random_samples
-Copyright(c) 2020 Marco Peyer
-
-This program is free software; you can redistribute itand /or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation; either version 2 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License along
-with this program; if not, write to the Free Software Foundation, Inc.,
-51 Franklin Street, Fifth Floor, Boston, MA 02110 - 1301 USA.
-
-See <https://www.gnu.org/licenses/gpl-2.0.txt>.
-*/
-
 #pragma once
 
-#include "histogram.h"
 #include "transform.h"
-
-#include <boost/math/distributions.hpp>
-namespace math = boost::math;
-
 #include <array>
+#include <boost/histogram.hpp>
+#include <boost/math/distributions.hpp>
 #include <string>
 #include <tuple>
 #include <vector>
 
-/// @brief ImGui-based 2D plot canvas with a scrollable grid, axes, PDF curve, and histogram.
+namespace math = boost::math;
+namespace histogram = boost::histogram;
+
+/// @brief ImGui-based 2D plot canvas with a scrollable grid, axes, PDF curve,
+/// and histogram.
 ///
-/// Plot inherits TransformCoordinateSystemInterface to manage the mapping between
-/// data coordinates and screen pixels. A typical frame sequence is:
+/// Plot inherits TransformCoordinateSystemInterface to manage the mapping
+/// between data coordinates and screen pixels. A typical frame sequence is:
 ///
 /// 1. SetCanvasRect()        — read ImGui cursor position
 /// 2. SetPlotRect()          — compute plot sub-area with axis label margins
@@ -47,7 +27,8 @@ namespace math = boost::math;
 /// 8. Draw()                 — render everything via ImDrawList
 class Plot : public TransformCoordinateSystemInterface {
 public:
-  /// @brief Constructs with default axis limits [-5, 5] x [-0.25, 1] and grid gaps {1, 0.25}.
+  /// @brief Constructs with default axis limits [-5, 5] x [-0.25, 1] and grid
+  /// gaps {1, 0.25}.
   Plot()
       : scrolling(0, 0), axes({-5.0f, 5.0f, -0.25f, 1.0f}),
         grid_gaps({1.0f, 0.25f}),
@@ -57,13 +38,16 @@ public:
   }
 
   /// @brief Returns the current axis limits {x_min, x_max, y_min, y_max}.
-  val4f GetAxes() const { return this->axes; }
+  [[nodiscard]] val4f GetAxes() const { return this->axes; }
 
   /// @brief Sets the axis limits.
   void SetAxes(const val4f &axes) { this->axes = axes; }
 
   /// @brief Returns the current grid step sizes {x_gap, y_gap} in data units.
-  std::array<float, 2> GetGridGaps() const { return this->grid_gaps; }
+  [[nodiscard]] std::array<float, 2> GetGridGaps() const
+  {
+    return this->grid_gaps;
+  }
 
   /// @brief Sets the grid step sizes.
   void SetGridGaps(const std::array<float, 2> &grid_gaps)
@@ -71,7 +55,8 @@ public:
     this->grid_gaps = grid_gaps;
   }
 
-  /// @brief Updates the canvas rectangle from the current ImGui cursor position and available content region.
+  /// @brief Updates the canvas rectangle from the current ImGui cursor position
+  /// and available content region.
   void SetCanvasRect()
   {
     const glm::vec2 cursor_screen_pos = ImGui::GetCursorScreenPos();
@@ -81,7 +66,8 @@ public:
         rect4f(cursor_screen_pos, cursor_screen_pos + content_region_avail);
   }
 
-  /// @brief Computes the plot sub-rectangle by shrinking the canvas by the given axis label margins.
+  /// @brief Computes the plot sub-rectangle by shrinking the canvas by the
+  /// given axis label margins.
   /// @param axis_gap_back  Margin on the left/top side (for axis labels).
   /// @param axis_gap_front Margin on the right/bottom side.
   void SetPlotRect(const float axis_gap_back, const float axis_gap_front)
@@ -94,7 +80,8 @@ public:
         canvas_rect.rb() + glm::vec2(-axis_gap_back, -axis_gap_back * 2));
   }
 
-  /// @brief Registers an invisible ImGui button over the canvas and updates the scroll offset on right-drag.
+  /// @brief Registers an invisible ImGui button over the canvas and updates the
+  /// scroll offset on right-drag.
   void ProceedInteraction()
   {
     ImGui::InvisibleButton("canvas", canvas_rect.size(true),
@@ -113,14 +100,13 @@ public:
         glm::vec2(canvas_rect.l() + scrolling.x, canvas_rect.t() + scrolling.y);
   }
 
-  /// @brief Reconfigures the coordinate transform and recomputes the x/y axis line endpoints.
+  /// @brief Reconfigures the coordinate transform and recomputes the x/y axis
+  /// line endpoints.
   void ProceedAxes()
   {
     transform_coordinate_system.SetAspectRatio(canvas_rect, plot_rect, axes);
 
     transform_coordinate_system.SetCanvasSizeAndOrigin(origin, scrolling);
-
-    ////////////////////////////////////////////////////////////////////////////////
 
     x_axisline_p0 = glm::vec2(canvas_rect.l() + axis_gap_back * 2,
                               canvas_rect.b() - axis_gap_back);
@@ -133,7 +119,8 @@ public:
                               canvas_rect.t() + axis_gap_back);
   }
 
-  /// @brief Regenerates vertical/horizontal grid lines, axis ticks, and numeric labels for the current scroll position.
+  /// @brief Regenerates vertical/horizontal grid lines, axis ticks, and numeric
+  /// labels for the current scroll position.
   void ProceedGrid()
   {
     vertical_grid.clear();
@@ -209,9 +196,12 @@ public:
     }
   }
 
-  /// @brief Evaluates the PDF of the given Boost.Math distribution at 1000 evenly-spaced points
-  ///        across the visible x axis range and projects them to canvas coordinates.
-  /// @param distribution A Boost.Math distribution that supports boost::math::pdf().
+  /// @brief Evaluates the PDF of the given Boost.Math distribution at 1000
+  /// evenly-spaced points
+  ///        across the visible x axis range and projects them to canvas
+  ///        coordinates.
+  /// @param distribution A Boost.Math distribution that supports
+  /// boost::math::pdf().
   template <typename Ty> void SetPlotCurve(const Ty distribution)
   {
     val4f scrolled_axes = transform_coordinate_system.GetScrolledAxes();
@@ -223,7 +213,7 @@ public:
     std::vector<glm::vec2> pdf_curve(steps);
 
     for (size_t index = 0; index < steps; ++index) {
-      const float float_index = static_cast<float>(index);
+      const auto float_index = static_cast<float>(index);
 
       const float current_x_value = scrolled_axes[0] + float_index * step_size;
       const float current_y_value = math::pdf(distribution, current_x_value);
@@ -240,7 +230,8 @@ public:
     }
   }
 
-  /// @brief Projects Boost.Histogram bins to canvas pixel rectangles ready for drawing.
+  /// @brief Projects Boost.Histogram bins to canvas pixel rectangles ready for
+  /// drawing.
   /// @param histogram A normalised Boost.Histogram with a single regular axis.
   void SetHistogram(
       const histogram::histogram<std::tuple<histogram::axis::regular<>>>
@@ -264,7 +255,8 @@ public:
     }
   }
 
-  /// @brief Renders all plot elements (background, axes, grid, histogram bars, PDF curve) via ImDrawList.
+  /// @brief Renders all plot elements (background, axes, grid, histogram bars,
+  /// PDF curve) via ImDrawList.
   void Draw()
   {
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
@@ -345,8 +337,8 @@ public:
     draw_list->PopClipRect();
   }
 
-  ImColor curve_color;      ///< Colour used for the PDF curve polyline.
-  ImColor histogram_color;  ///< Colour used to fill and outline histogram bars.
+  ImColor curve_color;     ///< Colour used for the PDF curve polyline.
+  ImColor histogram_color; ///< Colour used to fill and outline histogram bars.
 
 private:
   rect4f canvas_rect;
