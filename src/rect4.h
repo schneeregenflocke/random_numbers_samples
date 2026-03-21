@@ -96,11 +96,8 @@ public:
       if (l() > r()) {
         throw std::logic_error("left > right");
       }
-
       width = r() - l();
-    }
-
-    if (use_abs) {
+    } else {
       width = std::abs(r() - l());
     }
 
@@ -118,11 +115,8 @@ public:
       if (b() > t()) {
         throw std::logic_error("bottom > top");
       }
-
       height = t() - b();
-    }
-
-    if (use_abs) {
+    } else {
       height = std::abs(t() - b());
     }
 

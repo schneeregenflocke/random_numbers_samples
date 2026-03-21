@@ -132,7 +132,7 @@ public:
     x_axis_labels.clear();
     y_axis_labels.clear();
 
-    const float tick_lenght = 10;
+    const float tick_length = 10;
     const int decimal_places = 2;
 
     glm::vec2 grid_step = transform_coordinate_system.ScaleToCanvas(
@@ -154,7 +154,7 @@ public:
 
       std::array<glm::vec2, 2> current_tick = {
           glm::vec2(x, x_axisline_p0.y),
-          glm::vec2(x, x_axisline_p0.y + tick_lenght)};
+          glm::vec2(x, x_axisline_p0.y + tick_length)};
       x_axis_ticks.push_back(current_tick);
 
       float x_value =
@@ -182,8 +182,8 @@ public:
 
       std::array<glm::vec2, 2> current_tick = {
           glm::vec2(y_axisline_p0.x, y),
-          glm::vec2(y_axisline_p0.x - tick_lenght, y)};
-      x_axis_ticks.push_back(current_tick);
+          glm::vec2(y_axisline_p0.x - tick_length, y)};
+      y_axis_ticks.push_back(current_tick);
 
       float y_value =
           scrolled_axes[2] -
@@ -210,7 +210,7 @@ public:
     const float step_size =
         scrolled_axes.Lenght(0, 1) / static_cast<float>(steps);
 
-    std::vector<glm::vec2> pdf_curve(steps);
+    transformed_curve.resize(steps);
 
     for (size_t index = 0; index < steps; ++index) {
       const auto float_index = static_cast<float>(index);
@@ -218,15 +218,8 @@ public:
       const float current_x_value = scrolled_axes[0] + float_index * step_size;
       const float current_y_value = math::pdf(distribution, current_x_value);
 
-      pdf_curve[index] = glm::vec2(current_x_value, current_y_value);
-    }
-
-    transformed_curve.resize(pdf_curve.size());
-    size_t counter = 0;
-    for (const auto &curve_point : pdf_curve) {
-      transformed_curve[counter] =
-          transform_coordinate_system.TransformToCanvas(curve_point);
-      ++counter;
+      transformed_curve[index] = transform_coordinate_system.TransformToCanvas(
+          glm::vec2(current_x_value, current_y_value));
     }
   }
 
@@ -362,8 +355,6 @@ private:
   glm::vec2 y_axisline_p0;
   glm::vec2 y_axisline_p1;
 
-  glm::vec2 cs_origin_x_axis;
-  glm::vec2 cs_origin_y_axis;
 
   std::vector<std::array<glm::vec2, 2>> vertical_grid;
   std::vector<std::array<glm::vec2, 2>> horizontal_grid;

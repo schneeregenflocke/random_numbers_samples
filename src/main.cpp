@@ -139,7 +139,7 @@ try {
     ImGui_ImplGlfw_NewFrame();
     ImGui::NewFrame();
 
-    const auto [fm_width, fm_height] = glfw_interface.GetFrambufferSize();
+    const auto [fm_width, fm_height] = glfw_interface.GetFramebufferSize();
 
     ImGui::SetNextWindowPos(
         glm::vec2(static_cast<float>(fm_width) / kHalfDivisor, 0),
@@ -419,8 +419,8 @@ try {
 
     ImGui::End();
 
-    static const float mean = 0.0F;
-    static const float stddev = 1.0F;
+    const float mean = 0.0F;
+    const float stddev = 1.0F;
     const math::normal_distribution<float> normal_distribution(mean, stddev);
 
     ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
@@ -444,9 +444,10 @@ try {
     plot.ProceedGrid();
     plot.SetPlotCurve(normal_distribution);
 
+    const auto scrolled_axes = plot.GetScrolledAxes();
     auto histogram = plot_histogram.SetHistogram(current_histogram_data,
-                                                 plot.GetScrolledAxes()[0],
-                                                 plot.GetScrolledAxes()[1]);
+                                                 scrolled_axes[0],
+                                                 scrolled_axes[1]);
 
     plot.SetHistogram(histogram);
 

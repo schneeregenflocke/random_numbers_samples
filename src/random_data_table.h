@@ -127,7 +127,8 @@ public:
     // const auto t2 = std::chrono::high_resolution_clock::now();
     // const std::chrono::duration<double, std::milli> ms = t2 - t1;
 
-    const size_t number_threads = 12;
+    const size_t hw_threads = std::thread::hardware_concurrency();
+    const size_t number_threads = hw_threads != 0 ? hw_threads : 12;
 
     const size_t rest = number_samples % number_threads;
     const size_t slice_size = (number_samples - rest) / number_threads;
@@ -147,6 +148,7 @@ public:
     }
 
     std::vector<std::thread> thread_array;
+    thread_array.reserve(number_threads);
 
     for (const auto &slice : slice_indexes) {
       std::thread current_thread(&DataTable::GenerateSamplesSubset<V>, this,
@@ -196,7 +198,7 @@ public:
     sample_function_names.resize(sample_function_results_columns);
     sample_function_names[0] = std::string("sum");
     sample_function_names[1] = std::string("mean");
-    sample_function_names[2] = std::string("tts");
+    sample_function_names[2] = std::string("tss");
     sample_function_names[3] = std::string("variance1");
     sample_function_names[4] = std::string("variance2");
 
@@ -237,8 +239,9 @@ public:
       }
     }
 
-    found == false ? throw std::logic_error("data table: column name not found")
-                   : false;
+    if (!found) {
+      throw std::logic_error("data table: column name not found");
+    }
 
     return column;
   }

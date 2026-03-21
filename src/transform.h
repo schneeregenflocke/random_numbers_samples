@@ -40,7 +40,7 @@ See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 class TransformCoordinateSystem {
 public:
   /// @brief Default constructor.
-  TransformCoordinateSystem() {}
+  TransformCoordinateSystem() = default;
 
   /// @brief Configures the coordinate mapping from data to canvas space.
   /// @param canvas_rect Full canvas rectangle in screen pixels.
@@ -169,7 +169,7 @@ public:
   }
 
   /// @brief Returns a copy of the underlying transform object.
-  TransformCoordinateSystem GetTransformedCoordianteSystem()
+  TransformCoordinateSystem GetTransformedCoordinateSystem()
   {
     return transform_coordinate_system;
   }

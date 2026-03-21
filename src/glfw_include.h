@@ -84,7 +84,7 @@ public:
   }
 
   /// @brief Returns the current framebuffer size as {width, height} in pixels.
-  std::array<int, 2> GetFrambufferSize()
+  std::array<int, 2> GetFramebufferSize()
   {
     int width = 0;
     int height = 0;

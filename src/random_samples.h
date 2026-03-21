@@ -261,7 +261,7 @@ private:
   {
     if (init) {
       const auto param_package = random_distribution.param();
-      SetParameters<ResultTy, double>(param_package.p(), param_package.t());
+      SetParameters<ResultTy, double>(param_package.t(), param_package.p());
     } else {
       auto parameters = GetParameters();
       auto param0 = std::any_cast<ResultTy>(parameters.at(0));
