@@ -6,7 +6,7 @@
 #include <boost/histogram/axis/regular.hpp>
 #include <boost/histogram/fwd.hpp>
 #include <boost/histogram/histogram.hpp>
-#include <boost/math/distributions.hpp> // NOLINT(misc-include-cleaner)
+#include <boost/math/distributions.hpp>
 #include <cfloat>
 #include <cmath>
 #include <cstddef>
@@ -157,9 +157,13 @@ public:
       x += grid_step.x;
     }
 
-    for (; x <= plot_rect.r(); x += grid_step.x) { // NOLINT(bugprone-float-loop-counter,cert-flp30-c,clang-analyzer-security.FloatLoopCounter)
-      const std::array<glm::vec2, 2> current_line = {glm::vec2(x, plot_rect.t()),
-                                               glm::vec2(x, plot_rect.b())};
+    for (
+        ; x <= plot_rect.r();
+        x +=
+        grid_step
+            .x) { // NOLINT(bugprone-float-loop-counter,cert-flp30-c,clang-analyzer-security.FloatLoopCounter)
+      const std::array<glm::vec2, 2> current_line = {
+          glm::vec2(x, plot_rect.t()), glm::vec2(x, plot_rect.b())};
       vertical_grid.push_back(current_line);
 
       const std::array<glm::vec2, 2> current_tick = {
@@ -185,9 +189,13 @@ public:
       y -= grid_step.y;
     }
 
-    for (; y >= plot_rect.t(); y -= grid_step.y) { // NOLINT(bugprone-float-loop-counter,cert-flp30-c,clang-analyzer-security.FloatLoopCounter)
-      const std::array<glm::vec2, 2> current_line = {glm::vec2(plot_rect.l(), y),
-                                               glm::vec2(plot_rect.r(), y)};
+    for (
+        ; y >= plot_rect.t();
+        y -=
+        grid_step
+            .y) { // NOLINT(bugprone-float-loop-counter,cert-flp30-c,clang-analyzer-security.FloatLoopCounter)
+      const std::array<glm::vec2, 2> current_line = {
+          glm::vec2(plot_rect.l(), y), glm::vec2(plot_rect.r(), y)};
       horizontal_grid.push_back(current_line);
 
       const std::array<glm::vec2, 2> current_tick = {
@@ -225,11 +233,13 @@ public:
     for (size_t index = 0; index < steps; ++index) {
       const auto float_index = static_cast<float>(index);
 
-      const float current_x_value = scrolled_axes.at(0) + (float_index * step_size);
+      const float current_x_value =
+          scrolled_axes.at(0) + (float_index * step_size);
       const float current_y_value = math::pdf(distribution, current_x_value);
 
-      transformed_curve.at(index) = transform_coordinate_system.TransformToCanvas(
-          glm::vec2(current_x_value, current_y_value));
+      transformed_curve.at(index) =
+          transform_coordinate_system.TransformToCanvas(
+              glm::vec2(current_x_value, current_y_value));
     }
   }
 
@@ -244,10 +254,13 @@ public:
 
     for (histogram::axis::index_type index = 1; index < histogram.size() - 1;
          ++index) {
-      const float bin_lower = static_cast<float>(histogram.axis(0).bin(index).lower());
-      const float bin_upper = static_cast<float>(histogram.axis(0).bin(index).upper());
+      const float bin_lower =
+          static_cast<float>(histogram.axis(0).bin(index).lower());
+      const float bin_upper =
+          static_cast<float>(histogram.axis(0).bin(index).upper());
       const float histogram_width = bin_upper - bin_lower;
-      const float bin_height = static_cast<float>(histogram[index]) / histogram_width; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,cppcoreguidelines-init-variables)
+      const float bin_height =
+          static_cast<float>(histogram[index]) / histogram_width;
 
       const glm::vec2 p0 = transform_coordinate_system.TransformToCanvas(
           glm::vec2(bin_lower, bin_height));
@@ -273,7 +286,9 @@ public:
 
     const ImColor axis_color(0.4F, 0.4F, 1.0F, 1.0F);
 
-    ImFont *font = ImGui::GetIO().Fonts->Fonts[0]; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+    ImFont *font =
+        ImGui::GetIO().Fonts->Fonts
+            [0]; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
     const float font_size = 14.0F;
     const float tick_gap = 2.0F;
@@ -308,11 +323,15 @@ public:
     draw_list->AddLine(y_axisline_p0, y_axisline_p1, axis_color, 2.0F);
 
     for (const auto &line : x_axis_ticks) {
-      draw_list->AddLine(line[0], line[1], axis_color, 2); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      draw_list->AddLine(
+          line[0], line[1], axis_color,
+          2); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     for (const auto &line : y_axis_ticks) {
-      draw_list->AddLine(line[0], line[1], axis_color, 2); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      draw_list->AddLine(
+          line[0], line[1], axis_color,
+          2); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     draw_list->PopClipRect();
@@ -322,16 +341,24 @@ public:
     const ImColor grid_lines_color(0.8F, 0.8F, 0.8F, 0.5F);
 
     for (const auto &line : vertical_grid) {
-      draw_list->AddLine(line[0], line[1], grid_lines_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      draw_list->AddLine(
+          line[0], line[1],
+          grid_lines_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     for (const auto &line : horizontal_grid) {
-      draw_list->AddLine(line[0], line[1], grid_lines_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      draw_list->AddLine(
+          line[0], line[1],
+          grid_lines_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     for (const auto &bin : bin_array) {
-      draw_list->AddRect(bin[0], bin[1], histogram_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
-      draw_list->AddRectFilled(bin[0], bin[1], histogram_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      draw_list->AddRect(
+          bin[0], bin[1],
+          histogram_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      draw_list->AddRectFilled(
+          bin[0], bin[1],
+          histogram_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     draw_list->AddPolyline(transformed_curve.data(),
@@ -365,7 +392,6 @@ private:
 
   glm::vec2 y_axisline_p0{};
   glm::vec2 y_axisline_p1{};
-
 
   std::vector<std::array<glm::vec2, 2>> vertical_grid;
   std::vector<std::array<glm::vec2, 2>> horizontal_grid;

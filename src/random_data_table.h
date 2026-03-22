@@ -11,6 +11,7 @@
 #include <thread>
 #include <type_traits>
 #include <variant>
+#include <vector>
 
 /// @brief Stateless statistical helper functions for a vector of sample values.
 ///
@@ -40,7 +41,7 @@ public:
   /// @param sample_variables The sample data.
   /// @param sample_mean      Pre-computed mean of the sample.
   [[nodiscard]] Ty1 TotalSumOfSquares(const std::vector<Ty0> &sample_variables,
-                        Ty1 sample_mean) const
+                                      Ty1 sample_mean) const
   {
     Ty1 totalsumofsquares = 0;
     for (const auto &variable : sample_variables) {
@@ -102,10 +103,9 @@ double>::value>::type> double operator()(const double& variable) const
 template <typename Ty0, typename Ty1> class DataTable {
 public:
   // avoid type duplicate for variant template arguments
-  using VariantType =
-      std::conditional_t<std::is_same_v<Ty0, Ty1>,
-                         std::variant<Ty0, std::string>,
-                         std::variant<Ty0, Ty1, std::string>>;
+  using VariantType = std::conditional_t<std::is_same_v<Ty0, Ty1>,
+                                         std::variant<Ty0, std::string>,
+                                         std::variant<Ty0, Ty1, std::string>>;
 
   /// @brief Default constructor.
   DataTable() = default;
@@ -129,7 +129,7 @@ public:
     // const std::chrono::duration<double, std::milli> ms = t2 - t1;
 
     const size_t hw_threads = std::thread::hardware_concurrency();
-    const size_t number_threads = hw_threads != 0 ? hw_threads : 12;
+    const size_t number_threads = hw_threads != 0 ? hw_threads : 1;
 
     const size_t rest = number_samples % number_threads;
     const size_t slice_size = (number_samples - rest) / number_threads;
