@@ -49,7 +49,23 @@
       "Bash(clang-tidy -p build --fix-errors src/random_samples.h)",
       "Bash(cmake --build build --clean-first)",
       "Bash(cp src/glfw_include.h /tmp/glfw_test.h)",
-      "Bash(clang-tidy -p build --fix /tmp/glfw_test.h)"
+      "Bash(clang-tidy -p build --fix /tmp/glfw_test.h)",
+      "Bash(clang-tidy src/main.cpp src/plot.h src/random_data_table.h src/random_samples.h src/rect4.h src/transform.h src/glfw_include.h -p build/)",
+      "Bash(clang-tidy src/plot.h src/transform.h src/rect4.h src/random_data_table.h src/random_samples.h -p build/)",
+      "Bash(clang-tidy src/main.cpp src/glfw_include.h -p build/)",
+      "Bash(find /usr -path */boost/histogram/histogram.hpp)",
+      "Bash(find /usr -name histogram.hpp -path */boost/histogram*)",
+      "Read(//home/titan99/**)",
+      "Bash(python3 -c \"import subprocess; print\\(subprocess.run\\([''grep'',''-rn'',''axis::index_type'',''/usr/include/boost/histogram/fwd.hpp''], capture_output=True\\).stdout.decode\\(\\)\\)\")",
+      "Bash(xargs grep:*)",
+      "Bash(clang-tidy src/transform.h -p build/ --fix-errors -checks=llvm-header-guard)",
+      "Bash(clang-tidy src/glfw_include.h -p build/ -checks='-*,llvm-header-guard')",
+      "Bash(clang-tidy --stdin-filename=src/glfw_include.h -p build/ -checks='-*,llvm-header-guard' -)",
+      "Bash(grep -v \"^$\\\\|warnings generated\\\\|Suppressed\\\\|Use -header-filter\\\\|system headers\")",
+      "Bash(clang-tidy src/rect4.h -p build --)",
+      "Bash(clang-tidy src/rect4.h src/transform.h src/glfw_include.h -p build)",
+      "Bash(find /usr/include/glm/ -name *.hpp)",
+      "Bash(clang-tidy src/main.cpp -p build)"
     ]
   }
 }

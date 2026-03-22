@@ -1,9 +1,15 @@
-#pragma once
+#ifndef HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_RANDOM_DATA_TABLE_H
+#define HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_RANDOM_DATA_TABLE_H
 
 #include "random_numbers.h"
 #include <cmath>
+#include <cstddef>
 #include <numeric>
+#include <sstream>
+#include <stdexcept>
+#include <string>
 #include <thread>
+#include <type_traits>
 #include <variant>
 
 /// @brief Stateless statistical helper functions for a vector of sample values.
@@ -14,7 +20,7 @@
 template <typename Ty0, typename Ty1> class SampleFunctions {
 public:
   /// @brief Returns the sum of all sample values.
-  Ty1 Sum(const std::vector<Ty0> &sample_variables) const
+  [[nodiscard]] Ty1 Sum(const std::vector<Ty0> &sample_variables) const
   {
     const Ty1 sum = static_cast<Ty1>(std::accumulate(sample_variables.cbegin(),
                                                      sample_variables.cend(),
@@ -23,7 +29,7 @@ public:
   }
 
   /// @brief Returns the arithmetic mean of all sample values.
-  Ty1 Mean(const std::vector<Ty0> &sample_variables) const
+  [[nodiscard]] Ty1 Mean(const std::vector<Ty0> &sample_variables) const
   {
     const Ty1 size = static_cast<Ty1>(sample_variables.size());
     const Ty1 mean = Sum(sample_variables) / size;
@@ -33,7 +39,7 @@ public:
   /// @brief Returns the total sum of squared deviations from the mean.
   /// @param sample_variables The sample data.
   /// @param sample_mean      Pre-computed mean of the sample.
-  Ty1 TotalSumOfSquares(const std::vector<Ty0> &sample_variables,
+  [[nodiscard]] Ty1 TotalSumOfSquares(const std::vector<Ty0> &sample_variables,
                         Ty1 sample_mean) const
   {
     Ty1 totalsumofsquares = 0;
@@ -48,13 +54,13 @@ public:
   /// @param totalsumofsquares Total sum of squared deviations.
   /// @param sample_size       Divisor (n for population, n-1 for sample
   /// variance).
-  Ty1 Variance(Ty1 totalsumofsquares, Ty1 sample_size) const
+  [[nodiscard]] Ty1 Variance(Ty1 totalsumofsquares, Ty1 sample_size) const
   {
     return totalsumofsquares / sample_size;
   }
 
   /// @brief Returns the standard deviation as sqrt(variance).
-  Ty1 StandardDeviation(Ty1 sample_variance) const
+  [[nodiscard]] Ty1 StandardDeviation(Ty1 sample_variance) const
   {
     return std::sqrt(sample_variance);
   }
@@ -88,7 +94,7 @@ double>::value>::type> double operator()(const double& variable) const
 /// followed by five computed columns: sum, mean, total-sum-of-squares,
 /// population variance, and sample variance (n-1 denominator).
 ///
-/// GenerateSamples() fills the sample cells in parallel using 12 threads.
+/// GenerateSamples() fills the sample cells in parallel using hardware threads.
 /// CalculateSampleFunctionResults() then computes the five statistics columns.
 ///
 /// @tparam Ty0 Type of the raw sample values (e.g. int or float).
@@ -97,20 +103,15 @@ template <typename Ty0, typename Ty1> class DataTable {
 public:
   // avoid type duplicate for variant template arguments
   using VariantType =
-      typename std::conditional<std::is_same<Ty0, Ty1>::value,
-                                std::variant<Ty0, std::string>,
-                                std::variant<Ty0, Ty1, std::string>>::type;
+      std::conditional_t<std::is_same_v<Ty0, Ty1>,
+                         std::variant<Ty0, std::string>,
+                         std::variant<Ty0, Ty1, std::string>>;
 
   /// @brief Default constructor.
-  DataTable()
-      : sample_function_results_columns(5), number_name_rows(1),
-        number_columns(0), number_rows(0), number_samples(0), sample_size(0)
-  {
-    // std::cout << "variable type " << typeid(T).name() << '\n';
-  }
+  DataTable() = default;
 
   /// @brief Fills all sample cells using the given distribution, parallelised
-  /// over 12 threads.
+  /// over hardware threads.
   /// @param random_distribution A `<random>` distribution whose result_type is
   /// Ty0.
   /// @param number_samples      Number of samples (rows) to generate.
@@ -138,10 +139,10 @@ public:
 
     for (size_t index = 0; index < slice_indexes.size(); ++index) {
       if (index < slice_indexes.size() - 1) {
-        slice_indexes[index].first = number_name_rows + slice_size * index;
+        slice_indexes[index].first = number_name_rows + (slice_size * index);
         slice_indexes[index].second = slice_indexes[index].first + slice_size;
       } else {
-        slice_indexes[index].first = number_name_rows + slice_size * index;
+        slice_indexes[index].first = number_name_rows + (slice_size * index);
         slice_indexes[index].second =
             slice_indexes[index].first + slice_size + rest;
       }
@@ -227,7 +228,7 @@ public:
 
   /// @brief Returns the column index for the given header name.
   /// @throws std::logic_error if the name is not found.
-  size_t GetColumnByName(const std::string &name) const
+  [[nodiscard]] size_t GetColumnByName(const std::string &name) const
   {
     size_t column = 0;
     bool found = false;
@@ -248,7 +249,7 @@ public:
 
   /// @brief Returns all data-row values from the named column as Ty1.
   /// @param name Column header string (e.g. "mean", "variance1").
-  std::vector<Ty1> GetColumnData(const std::string &name) const
+  [[nodiscard]] std::vector<Ty1> GetColumnData(const std::string &name) const
   {
     size_t column = GetColumnByName(name);
 
@@ -264,7 +265,7 @@ public:
 
   /// @brief Returns the sample at the given zero-based index as a vector of Ty0
   /// values.
-  std::vector<Ty0> GetSample(size_t number) const
+  [[nodiscard]] std::vector<Ty0> GetSample(size_t number) const
   {
     number += number_name_rows;
 
@@ -290,7 +291,7 @@ public:
   }
 
   /// @brief Returns the cell at (column, row) formatted as a string.
-  std::string GetString(size_t column, size_t row) const
+  [[nodiscard]] std::string GetString(size_t column, size_t row) const
   {
     std::stringstream stream;
 
@@ -302,11 +303,11 @@ public:
   }
 
   /// @brief Returns the total number of rows (header row + sample rows).
-  size_t GetNumberRows() const { return number_rows; }
+  [[nodiscard]] size_t GetNumberRows() const { return number_rows; }
 
   /// @brief Returns the total number of columns (sample columns + statistics
   /// columns).
-  size_t GetNumberColumns() const { return number_columns; }
+  [[nodiscard]] size_t GetNumberColumns() const { return number_columns; }
 
 private:
   void SetSize(size_t number_samples, size_t sample_size)
@@ -329,16 +330,18 @@ private:
     }
   }
 
-  const size_t sample_function_results_columns;
-  const size_t number_name_rows;
+  static constexpr size_t sample_function_results_columns = 5;
+  static constexpr size_t number_name_rows = 1;
 
-  size_t number_samples;
-  size_t sample_size;
+  size_t number_samples = 0;
+  size_t sample_size = 0;
 
-  size_t number_columns;
-  size_t number_rows;
+  size_t number_columns = 0;
+  size_t number_rows = 0;
 
-  std::vector<VariantType> data;
+  std::vector<VariantType> data{};
   SampleFunctions<Ty0, Ty1> sample_functions;
-  std::vector<std::string> sample_function_names;
+  std::vector<std::string> sample_function_names{};
 };
+
+#endif // HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_RANDOM_DATA_TABLE_H

@@ -19,17 +19,13 @@ with this program; if not, write to the Free Software Foundation, Inc.,
 See <https://www.gnu.org/licenses/gpl-2.0.txt>.
 */
 
-#pragma once
+#ifndef HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_TRANSFORM_H
+#define HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_TRANSFORM_H
 
 #include "rect4.h"
 
-#include <glm/glm.hpp>
-
-#include "glfw_include.h"
-
-#include <imgui.h>
-// #include <imgui_impl_glfw.h>
-// #include <imgui_impl_opengl3.h>
+#include <cmath>
+#include <glm/glm.hpp> // NOLINT(misc-include-cleaner)
 
 /// @brief Maps between plot (data) coordinates and canvas (pixel) coordinates.
 ///
@@ -68,15 +64,15 @@ public:
   }
 
   /// @brief Returns the axis limits adjusted for the current scroll offset.
-  val4f GetScrolledAxes() const
+  [[nodiscard]] val4f GetScrolledAxes() const
   {
-    glm::vec2 scaled_scrolling = ScaleToPlot(scrolling);
+    const glm::vec2 scaled_scrolling = ScaleToPlot(scrolling);
 
     val4f scrolled_axes;
-    scrolled_axes[0] = axes[0] - scaled_scrolling.x;
-    scrolled_axes[1] = axes[1] - scaled_scrolling.x;
-    scrolled_axes[2] = axes[2] + scaled_scrolling.y;
-    scrolled_axes[3] = axes[3] + scaled_scrolling.y;
+    scrolled_axes.at(0) = axes.at(0) - scaled_scrolling.x;
+    scrolled_axes.at(1) = axes.at(1) - scaled_scrolling.x;
+    scrolled_axes.at(2) = axes.at(2) + scaled_scrolling.y;
+    scrolled_axes.at(3) = axes.at(3) + scaled_scrolling.y;
 
     return scrolled_axes;
   }
@@ -84,14 +80,14 @@ public:
   /// @brief Converts a data-space point to a canvas pixel position.
   /// @param point Data-space {x, y} coordinates.
   /// @return Screen pixel position within the canvas.
-  glm::vec2 TransformToCanvas(const glm::vec2 &point) const
+  [[nodiscard]] glm::vec2 TransformToCanvas(const glm::vec2 &point) const
   {
-    glm::vec2 scaled_point = ScaleToCanvas(point);
-    float scaled_x_axis_begin = ScaleXToCanvas(axes[0]);
-    float scaled_y_axis_begin = ScaleYToCanvas(axes[2]);
+    const glm::vec2 scaled_point = ScaleToCanvas(point);
+    const float scaled_x_axis_begin = ScaleXToCanvas(axes.at(0));
+    const float scaled_y_axis_begin = ScaleYToCanvas(axes.at(2));
 
-    float axes_x_gap = plot_rect.l() - canvas_rect.l();
-    float axes_y_gap = std::abs(canvas_rect.b() - plot_rect.b());
+    const float axes_x_gap = plot_rect.l() - canvas_rect.l();
+    const float axes_y_gap = std::abs(canvas_rect.b() - plot_rect.b());
 
     glm::vec2 result;
     result.x = origin.x + axes_x_gap - scaled_x_axis_begin + scaled_point.x;
@@ -102,7 +98,7 @@ public:
   }
 
   /// @brief Scales a 2D data-space vector to canvas pixel units.
-  glm::vec2 ScaleToCanvas(const glm::vec2 &value) const
+  [[nodiscard]] glm::vec2 ScaleToCanvas(const glm::vec2 &value) const
   {
     glm::vec2 result;
     result.x = aspect_ratio.x * value.x;
@@ -112,43 +108,43 @@ public:
   }
 
   /// @brief Scales a single x data value to canvas pixel units.
-  float ScaleXToCanvas(const float value) const
+  [[nodiscard]] float ScaleXToCanvas(const float value) const
   {
     return aspect_ratio.x * value;
   }
 
   /// @brief Scales a single y data value to canvas pixel units.
-  float ScaleYToCanvas(const float value) const
+  [[nodiscard]] float ScaleYToCanvas(const float value) const
   {
     return aspect_ratio.y * value;
   }
 
   /// @brief Converts a 2D canvas pixel vector to data-space units.
-  glm::vec2 ScaleToPlot(const glm::vec2 &value) const
+  [[nodiscard]] glm::vec2 ScaleToPlot(const glm::vec2 &value) const
   {
     glm::vec2 result;
-    result.x = (1.0f / aspect_ratio.x) * value.x;
-    result.y = (1.0f / aspect_ratio.y) * value.y;
+    result.x = (1.0F / aspect_ratio.x) * value.x;
+    result.y = (1.0F / aspect_ratio.y) * value.y;
     return result;
   }
 
   /// @brief Converts a canvas x pixel value to data-space units.
-  float ScaleXToPlot(const float value) const
+  [[nodiscard]] float ScaleXToPlot(const float value) const
   {
-    return (1.0f / aspect_ratio.x) * value;
+    return (1.0F / aspect_ratio.x) * value;
   }
 
   /// @brief Converts a canvas y pixel value to data-space units.
-  float ScaleYToPlot(const float value) const
+  [[nodiscard]] float ScaleYToPlot(const float value) const
   {
-    return (1.0f / aspect_ratio.y) * value;
+    return (1.0F / aspect_ratio.y) * value;
   }
 
 private:
-  glm::vec2 aspect_ratio; ///< Pixels-per-data-unit ratio for x and y.
+  glm::vec2 aspect_ratio{}; ///< Pixels-per-data-unit ratio for x and y.
 
-  glm::vec2 origin;    ///< Canvas top-left in screen pixels.
-  glm::vec2 scrolling; ///< Accumulated scroll delta in screen pixels.
+  glm::vec2 origin{};    ///< Canvas top-left in screen pixels.
+  glm::vec2 scrolling{}; ///< Accumulated scroll delta in screen pixels.
 
   rect4f canvas_rect; ///< Full canvas area in screen pixels.
   rect4f plot_rect;   ///< Plot sub-area within the canvas (excludes axis labels).
@@ -163,13 +159,13 @@ private:
 class TransformCoordinateSystemInterface {
 public:
   /// @brief Returns the current axis limits adjusted for scroll.
-  val4f GetScrolledAxes()
+  [[nodiscard]] val4f GetScrolledAxes()
   {
     return transform_coordinate_system.GetScrolledAxes();
   }
 
   /// @brief Returns a copy of the underlying transform object.
-  TransformCoordinateSystem GetTransformedCoordinateSystem()
+  [[nodiscard]] TransformCoordinateSystem GetTransformedCoordinateSystem()
   {
     return transform_coordinate_system;
   }
@@ -177,3 +173,5 @@ public:
 protected:
   TransformCoordinateSystem transform_coordinate_system; ///< Owned transform instance.
 };
+
+#endif // HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_TRANSFORM_H

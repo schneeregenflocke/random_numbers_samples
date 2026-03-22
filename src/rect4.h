@@ -1,10 +1,11 @@
-#pragma once
+#ifndef HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_RECT4_H
+#define HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_RECT4_H
 
 #include <array>
 #include <cmath>
-#include <exception>
-#include <imgui.h>
-#include <initializer_list>
+#include <cstddef>
+#include <glm/fwd.hpp>
+#include <glm/glm.hpp> // NOLINT(misc-include-cleaner)
 #include <stdexcept>
 
 /// @brief Axis-aligned 2D rectangle stored as four edge values.
@@ -50,16 +51,16 @@ public:
   }
 
   /// @brief Returns the left edge.
-  Ty l() const { return edges[0]; }
+  [[nodiscard]] Ty l() const { return edges[0]; }
 
   /// @brief Returns the bottom edge.
-  Ty b() const { return edges[1]; }
+  [[nodiscard]] Ty b() const { return edges[1]; }
 
   /// @brief Returns the right edge.
-  Ty r() const { return edges[2]; }
+  [[nodiscard]] Ty r() const { return edges[2]; }
 
   /// @brief Returns the top edge.
-  Ty t() const { return edges[3]; }
+  [[nodiscard]] Ty t() const { return edges[3]; }
 
   /// @brief Sets the left edge.
   void l(const Ty l) { edges[0] = l; }
@@ -74,7 +75,7 @@ public:
   void t(const Ty t) { edges[3] = t; }
 
   /// @brief Returns true when all edges are zero.
-  bool is_empty() const
+  [[nodiscard]] bool is_empty() const
   {
     bool empty = false;
 
@@ -88,7 +89,7 @@ public:
   /// @brief Returns the rectangle width (r - l).
   /// @param use_abs If true, returns the absolute value; otherwise throws if l
   /// > r.
-  Ty width(const bool use_abs = false) const
+  [[nodiscard]] Ty width(const bool use_abs = false) const
   {
     Ty width = 0;
 
@@ -107,7 +108,7 @@ public:
   /// @brief Returns the rectangle height (t - b).
   /// @param use_abs If true, returns the absolute value; otherwise throws if b
   /// > t.
-  Ty height(const bool use_abs = false) const
+  [[nodiscard]] Ty height(const bool use_abs = false) const
   {
     Ty height = 0;
 
@@ -125,7 +126,7 @@ public:
 
   /// @brief Returns {width, height} as a 2D vector.
   /// @param use_abs Passed to width() and height().
-  glm::vec<2, Ty> size(const bool use_abs = false) const
+  [[nodiscard]] glm::vec<2, Ty> size(const bool use_abs = false) const
   {
     return glm::vec<2, Ty>(width(use_abs), height(use_abs));
   }
@@ -133,7 +134,7 @@ public:
   /// @brief Returns a new rectangle expanded outward by the given margins.
   /// @param expand Margins to add: l/b expand left/bottom outward, r/t expand
   /// right/top outward.
-  rect4 expand(const rect4 &expand) const
+  [[nodiscard]] rect4 expand(const rect4 &expand) const
   {
     rect4 expanded;
     expanded.l(l() - expand.l());
@@ -145,7 +146,7 @@ public:
 
   /// @brief Returns a new rectangle shrunk inward by the given margins.
   /// @param reduce Margins to remove from each side.
-  rect4 reduce(const rect4 &reduce) const
+  [[nodiscard]] rect4 reduce(const rect4 &reduce) const
   {
     rect4 reduced;
     reduced.l(l() + reduce.l());
@@ -157,7 +158,7 @@ public:
 
   /// @brief Returns a new rectangle uniformly scaled about its centre.
   /// @param factor Scaling factor (> 1 enlarges, < 1 shrinks).
-  rect4 scale(const Ty factor) const
+  [[nodiscard]] rect4 scale(const Ty factor) const
   {
     float half_width_diff = ((width() * factor) - width()) / static_cast<Ty>(2);
     float half_height_diff =
@@ -169,23 +170,23 @@ public:
   }
 
   /// @brief Returns the centre point of the rectangle.
-  glm::vec<2, Ty> center() const
+  [[nodiscard]] glm::vec<2, Ty> center() const
   {
-    return glm::vec<2, Ty>(l() + width() / static_cast<Ty>(2),
-                           b() + height() / static_cast<Ty>(2));
+    return glm::vec<2, Ty>(l() + (width() / static_cast<Ty>(2)),
+                           b() + (height() / static_cast<Ty>(2)));
   }
 
   /// @brief Returns the left-bottom corner vector.
-  glm::vec<2, Ty> lb() const { return glm::vec<2, Ty>(l(), b()); }
+  [[nodiscard]] glm::vec<2, Ty> lb() const { return glm::vec<2, Ty>(l(), b()); }
 
   /// @brief Returns the right-bottom corner vector.
-  glm::vec<2, Ty> rb() const { return glm::vec<2, Ty>(r(), b()); }
+  [[nodiscard]] glm::vec<2, Ty> rb() const { return glm::vec<2, Ty>(r(), b()); }
 
   /// @brief Returns the left-top corner vector.
-  glm::vec<2, Ty> lt() const { return glm::vec<2, Ty>(l(), t()); }
+  [[nodiscard]] glm::vec<2, Ty> lt() const { return glm::vec<2, Ty>(l(), t()); }
 
   /// @brief Returns the right-top corner vector.
-  glm::vec<2, Ty> rt() const { return glm::vec<2, Ty>(r(), t()); }
+  [[nodiscard]] glm::vec<2, Ty> rt() const { return glm::vec<2, Ty>(r(), t()); }
 
 private:
   std::array<Ty, 4> edges; ///< Internal storage: {left, bottom, right, top}.
@@ -206,22 +207,28 @@ public:
   val4() : val{0, 0, 0, 0} {}
 
   /// @brief Constructs from a 4-element array.
-  val4(const std::array<Ty, 4> &val) : val(val) {}
+  explicit val4(const std::array<Ty, 4> &val) : val(val) {}
 
   /// @brief Returns the span between two indexed elements (val[to] -
   /// val[from]).
   /// @param from Index of the start element.
   /// @param to   Index of the end element.
-  Ty Lenght(const size_t from, const size_t to) const
+  [[nodiscard]] Ty Lenght(const size_t from, const size_t to) const
   {
-    return val[to] - val[from];
+    return val.at(to) - val.at(from);
   }
 
   /// @brief Mutable element access.
-  Ty &operator[](size_t index) { return val[index]; }
+  Ty &operator[](size_t index) { return val.at(index); }
 
   /// @brief Const element access.
-  Ty operator[](size_t index) const { return val[index]; }
+  Ty operator[](size_t index) const { return val.at(index); }
+
+  /// @brief Bounds-checked mutable element access.
+  Ty &at(size_t index) { return val.at(index); }
+
+  /// @brief Bounds-checked const element access.
+  [[nodiscard]] const Ty &at(size_t index) const { return val.at(index); }
 
 private:
   std::array<Ty, 4> val; ///< Internal 4-element storage.
@@ -229,3 +236,5 @@ private:
 
 /// @brief Convenience alias for a float-typed val4.
 using val4f = val4<float>;
+
+#endif // HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_RECT4_H

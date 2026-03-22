@@ -20,12 +20,15 @@
 #include <boost/math/distributions/normal.hpp>
 #include <cstddef>
 #include <cstdlib>
+#include <epoxy/gl.h>
+#include <exception>
 #include <format>
 #include <imgui.h>
 #include <imgui_impl_glfw.h>
 #include <imgui_impl_opengl3.h>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 namespace math = boost::math;
@@ -114,8 +117,8 @@ try {
   ImGui_ImplGlfw_InitForOpenGL(glfw_interface.GetWindow(), true);
   ImGui_ImplOpenGL3_Init(GLFW_Interface::GetGLSLVersion().c_str());
 
-  GLint sample_buffers = 0;
-  glGetIntegerv(GL_SAMPLES, &sample_buffers);
+  GLint sample_buffers = 0;                        // NOLINT(misc-include-cleaner)
+  glGetIntegerv(GL_SAMPLES, &sample_buffers);       // NOLINT(misc-include-cleaner)
 
   SamplerCollection sampler_collection;
   Plot plot;
@@ -172,7 +175,7 @@ try {
       if (ImGui::BeginCombo("Random Distribution",
                             distribution_combo_label.c_str())) {
         for (int index = 0;
-             index < static_cast<int>(sampler_collection.GetSize()); ++index) {
+             std::cmp_less(index, sampler_collection.GetSize()); ++index) {
           const bool is_selected = (random_distribution_index == index);
 
           if (ImGui::Selectable(sampler_collection.GetName(index).c_str(),
@@ -306,7 +309,7 @@ try {
       if (ImGui::BeginCombo("sample function results",
                             sample_function_combo_label.c_str())) {
         for (int index = 0;
-             index < static_cast<int>(sample_function_names.size()); ++index) {
+             std::cmp_less(index, sample_function_names.size()); ++index) {
           const bool is_selected = (sample_functions_index == index);
 
           if (ImGui::Selectable(
@@ -353,21 +356,21 @@ try {
       const std::string format_string = "%.2f";
 
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("X-Axis Lower Limit", &axes[0], input_step, input_step,
+      ImGui::InputFloat("X-Axis Lower Limit", &axes.at(0), input_step, input_step,
                         format_string.c_str());
 
       ImGui::SameLine(half_avail);
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("Y-Axis Lower Limit", &axes[2], input_step, input_step,
+      ImGui::InputFloat("Y-Axis Lower Limit", &axes.at(2), input_step, input_step,
                         format_string.c_str());
 
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("X-Axis Upper Limit", &axes[1], input_step, input_step,
+      ImGui::InputFloat("X-Axis Upper Limit", &axes.at(1), input_step, input_step,
                         format_string.c_str());
 
       ImGui::SameLine(half_avail);
       ImGui::SetNextItemWidth(item_width);
-      ImGui::InputFloat("Y-Axis Upper Limit", &axes[3], input_step, input_step,
+      ImGui::InputFloat("Y-Axis Upper Limit", &axes.at(3), input_step, input_step,
                         format_string.c_str());
 
       plot.SetAxes(axes);
@@ -446,8 +449,8 @@ try {
 
     const auto scrolled_axes = plot.GetScrolledAxes();
     auto histogram = plot_histogram.SetHistogram(current_histogram_data,
-                                                 scrolled_axes[0],
-                                                 scrolled_axes[1]);
+                                                 scrolled_axes.at(0),
+                                                 scrolled_axes.at(1));
 
     plot.SetHistogram(histogram);
 

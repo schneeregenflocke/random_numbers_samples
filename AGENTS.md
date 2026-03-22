@@ -78,6 +78,22 @@ Das Fenster ist zweigeteilt:
 | Boost.Math      | Wahrscheinlichkeitsdichtefunktionen (PDF) |
 | embed-resource  | Einbetten von Lizenztexten als Ressourcen |
 
+## Linter-Warnungen beheben
+
+Wenn die Aufgabe lautet, Linter-Warnungen zu beheben (clang-tidy, clangd), bedeutet das immer:
+die **Ursache beheben** — nicht die Warnung unterdrücken.
+
+**Verboten:** `// NOLINT(...)` hinzufügen, um eine Warnung zum Verschwinden zu bringen.
+Das ist keine Lösung — die Warnung ist nur versteckt, der Fehler bleibt.
+
+**Richtig:** Das eigentliche Problem im Code beheben:
+- Fehlende `#include`-Direktiven hinzufügen (statt `misc-include-cleaner` zu unterdrücken)
+- Float-Schleifenzähler durch Integer-Zähler ersetzen (statt `bugprone-float-loop-counter` zu unterdrücken)
+- `const` ergänzen, `[[nodiscard]]` hinzufügen, korrekte Typen verwenden — was auch immer die Warnung verlangt
+
+Bestehende `// NOLINT`-Kommentare, die vor der aktuellen Arbeit schon im Code waren, dürfen
+stehen bleiben. Neue dürfen nicht hinzugefügt werden.
+
 ## Build
 
 CMake 3.16+, C++26-Compiler (GCC 15+). Auf Linux: `libepoxy` muss systemseitig installiert sein.

@@ -1,9 +1,19 @@
-#pragma once
+#ifndef HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_PLOT_H
+#define HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_PLOT_H
 
 #include "transform.h"
 #include <array>
-#include <boost/histogram.hpp>
-#include <boost/math/distributions.hpp>
+#include <boost/histogram/axis/regular.hpp>
+#include <boost/histogram/fwd.hpp>
+#include <boost/histogram/histogram.hpp>
+#include <boost/math/distributions.hpp> // NOLINT(misc-include-cleaner)
+#include <cfloat>
+#include <cmath>
+#include <cstddef>
+#include <imgui.h>
+#include <iomanip>
+#include <ios>
+#include <sstream>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -30,10 +40,10 @@ public:
   /// @brief Constructs with default axis limits [-5, 5] x [-0.25, 1] and grid
   /// gaps {1, 0.25}.
   Plot()
-      : scrolling(0, 0), axes({-5.0f, 5.0f, -0.25f, 1.0f}),
-        grid_gaps({1.0f, 0.25f}),
-        curve_color(ImColor(.191f, .526f, .805f, 1.f)),
-        histogram_color(ImColor(.944f, .791f, .663f, .534f))
+      : scrolling(0, 0), axes({-5.0F, 5.0F, -0.25F, 1.0F}),
+        grid_gaps({1.0F, 0.25F}),
+        curve_color(ImColor(.191F, .526F, .805F, 1.F)),
+        histogram_color(ImColor(.944F, .791F, .663F, .534F))
   {
   }
 
@@ -76,8 +86,8 @@ public:
     this->axis_gap_front = axis_gap_front;
 
     plot_rect = rect4f(
-        canvas_rect.lt() + glm::vec2(axis_gap_back * 2, axis_gap_back),
-        canvas_rect.rb() + glm::vec2(-axis_gap_back, -axis_gap_back * 2));
+        canvas_rect.lt() + glm::vec2((axis_gap_back * 2), axis_gap_back),
+        canvas_rect.rb() + glm::vec2(-axis_gap_back, -(axis_gap_back * 2)));
   }
 
   /// @brief Registers an invisible ImGui button over the canvas and updates the
@@ -108,13 +118,13 @@ public:
 
     transform_coordinate_system.SetCanvasSizeAndOrigin(origin, scrolling);
 
-    x_axisline_p0 = glm::vec2(canvas_rect.l() + axis_gap_back * 2,
+    x_axisline_p0 = glm::vec2(canvas_rect.l() + (axis_gap_back * 2),
                               canvas_rect.b() - axis_gap_back);
     x_axisline_p1 = glm::vec2(canvas_rect.r() - axis_gap_back,
                               canvas_rect.b() - axis_gap_back);
 
     y_axisline_p0 = glm::vec2(canvas_rect.l() + axis_gap_back,
-                              canvas_rect.b() - axis_gap_back * 2);
+                              canvas_rect.b() - (axis_gap_back * 2));
     y_axisline_p1 = glm::vec2(canvas_rect.l() + axis_gap_back,
                               canvas_rect.t() + axis_gap_back);
   }
@@ -135,11 +145,11 @@ public:
     const float tick_length = 10;
     const int decimal_places = 2;
 
-    glm::vec2 grid_step = transform_coordinate_system.ScaleToCanvas(
-        glm::vec2(grid_gaps[0], grid_gaps[1]));
-    float magic_x = fmodf(scrolling.x, grid_step.x);
+    const glm::vec2 grid_step = transform_coordinate_system.ScaleToCanvas(
+        glm::vec2(grid_gaps.at(0), grid_gaps.at(1)));
+    const float magic_x = fmodf(scrolling.x, grid_step.x);
 
-    val4f scrolled_axes = transform_coordinate_system.GetScrolledAxes();
+    const val4f scrolled_axes = transform_coordinate_system.GetScrolledAxes();
 
     float x = plot_rect.l() + magic_x;
 
@@ -147,27 +157,27 @@ public:
       x += grid_step.x;
     }
 
-    for (; x <= plot_rect.r(); x += grid_step.x) {
-      std::array<glm::vec2, 2> current_line = {glm::vec2(x, plot_rect.t()),
+    for (; x <= plot_rect.r(); x += grid_step.x) { // NOLINT(bugprone-float-loop-counter,cert-flp30-c,clang-analyzer-security.FloatLoopCounter)
+      const std::array<glm::vec2, 2> current_line = {glm::vec2(x, plot_rect.t()),
                                                glm::vec2(x, plot_rect.b())};
       vertical_grid.push_back(current_line);
 
-      std::array<glm::vec2, 2> current_tick = {
+      const std::array<glm::vec2, 2> current_tick = {
           glm::vec2(x, x_axisline_p0.y),
           glm::vec2(x, x_axisline_p0.y + tick_length)};
       x_axis_ticks.push_back(current_tick);
 
-      float x_value =
+      const float x_value =
           transform_coordinate_system.ScaleXToPlot(x - plot_rect.l()) +
-          scrolled_axes[0];
+          scrolled_axes.at(0);
       std::stringstream stream;
       stream << std::fixed << std::setprecision(decimal_places) << x_value;
-      std::tuple<glm::vec2, std::string> current_label =
-          std::make_tuple(current_tick[1], stream.str());
+      const std::tuple<glm::vec2, std::string> current_label =
+          std::make_tuple(current_tick.at(1), stream.str());
       x_axis_labels.push_back(current_label);
     }
 
-    float magic_y = fmodf(-scrolling.y, grid_step.y);
+    const float magic_y = fmodf(-scrolling.y, grid_step.y);
 
     float y = plot_rect.b() - magic_y;
 
@@ -175,23 +185,23 @@ public:
       y -= grid_step.y;
     }
 
-    for (; y >= plot_rect.t(); y -= grid_step.y) {
-      std::array<glm::vec2, 2> current_line = {glm::vec2(plot_rect.l(), y),
+    for (; y >= plot_rect.t(); y -= grid_step.y) { // NOLINT(bugprone-float-loop-counter,cert-flp30-c,clang-analyzer-security.FloatLoopCounter)
+      const std::array<glm::vec2, 2> current_line = {glm::vec2(plot_rect.l(), y),
                                                glm::vec2(plot_rect.r(), y)};
       horizontal_grid.push_back(current_line);
 
-      std::array<glm::vec2, 2> current_tick = {
+      const std::array<glm::vec2, 2> current_tick = {
           glm::vec2(y_axisline_p0.x, y),
           glm::vec2(y_axisline_p0.x - tick_length, y)};
       y_axis_ticks.push_back(current_tick);
 
-      float y_value =
-          scrolled_axes[2] -
+      const float y_value =
+          scrolled_axes.at(2) -
           transform_coordinate_system.ScaleYToPlot(y - plot_rect.b());
       std::stringstream stream;
       stream << std::fixed << std::setprecision(decimal_places) << y_value;
-      std::tuple<glm::vec2, std::string> current_label =
-          std::make_tuple(current_tick[1], stream.str());
+      const std::tuple<glm::vec2, std::string> current_label =
+          std::make_tuple(current_tick.at(1), stream.str());
       y_axis_labels.push_back(current_label);
     }
   }
@@ -204,7 +214,7 @@ public:
   /// boost::math::pdf().
   template <typename Ty> void SetPlotCurve(const Ty distribution)
   {
-    val4f scrolled_axes = transform_coordinate_system.GetScrolledAxes();
+    const val4f scrolled_axes = transform_coordinate_system.GetScrolledAxes();
 
     const size_t steps = 1000;
     const float step_size =
@@ -215,10 +225,10 @@ public:
     for (size_t index = 0; index < steps; ++index) {
       const auto float_index = static_cast<float>(index);
 
-      const float current_x_value = scrolled_axes[0] + float_index * step_size;
+      const float current_x_value = scrolled_axes.at(0) + (float_index * step_size);
       const float current_y_value = math::pdf(distribution, current_x_value);
 
-      transformed_curve[index] = transform_coordinate_system.TransformToCanvas(
+      transformed_curve.at(index) = transform_coordinate_system.TransformToCanvas(
           glm::vec2(current_x_value, current_y_value));
     }
   }
@@ -234,15 +244,15 @@ public:
 
     for (histogram::axis::index_type index = 1; index < histogram.size() - 1;
          ++index) {
-      const float bin_lower = histogram.axis(0).bin(index).lower();
-      const float bin_upper = histogram.axis(0).bin(index).upper();
+      const float bin_lower = static_cast<float>(histogram.axis(0).bin(index).lower());
+      const float bin_upper = static_cast<float>(histogram.axis(0).bin(index).upper());
       const float histogram_width = bin_upper - bin_lower;
-      const float bin_height = histogram[index] / histogram_width;
+      const float bin_height = static_cast<float>(histogram[index]) / histogram_width; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access,cppcoreguidelines-init-variables)
 
       const glm::vec2 p0 = transform_coordinate_system.TransformToCanvas(
           glm::vec2(bin_lower, bin_height));
       const glm::vec2 p1 = transform_coordinate_system.TransformToCanvas(
-          glm::vec2(bin_upper, 0.f));
+          glm::vec2(bin_upper, 0.0F));
 
       bin_array.push_back({p0, p1});
     }
@@ -255,26 +265,26 @@ public:
     ImDrawList *draw_list = ImGui::GetWindowDrawList();
 
     draw_list->AddRectFilled(canvas_rect.lt(), canvas_rect.rb(),
-                             ImColor(1.0f, 1.0f, 1.0f, 1.0f));
+                             ImColor(1.0F, 1.0F, 1.0F, 1.0F));
     draw_list->AddRect(canvas_rect.lt(), canvas_rect.rb(),
-                       ImColor(1.0f, 1.0f, 1.0f, 1.0f));
+                       ImColor(1.0F, 1.0F, 1.0F, 1.0F));
     draw_list->AddRect(plot_rect.lt(), plot_rect.rb(),
-                       ImColor(0.0f, 0.0f, 0.0f, 0.5f));
+                       ImColor(0.0F, 0.0F, 0.0F, 0.5F));
 
-    ImColor axis_color(0.4f, 0.4f, 1.0f, 1.0f);
+    const ImColor axis_color(0.4F, 0.4F, 1.0F, 1.0F);
 
-    ImFont *font = ImGui::GetIO().Fonts->Fonts[0];
+    ImFont *font = ImGui::GetIO().Fonts->Fonts[0]; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 
-    const float font_size = 14.f;
-    const float tick_gap = 2.f;
+    const float font_size = 14.0F;
+    const float tick_gap = 2.0F;
 
     for (const auto &label : x_axis_labels) {
       auto pos = std::get<0>(label);
       auto text = std::get<1>(label);
 
-      glm::vec2 font_size_vec =
-          font->CalcTextSizeA(font_size, FLT_MAX, 0.0f, text.c_str());
-      pos.x = pos.x - (font_size_vec.x * 0.5f);
+      const glm::vec2 font_size_vec =
+          font->CalcTextSizeA(font_size, FLT_MAX, 0.0F, text.c_str());
+      pos.x = pos.x - (font_size_vec.x * 0.5F);
       pos.y = pos.y + tick_gap;
 
       draw_list->AddText(font, font_size, pos, axis_color, text.c_str());
@@ -284,48 +294,49 @@ public:
       auto pos = std::get<0>(label);
       auto text = std::get<1>(label);
 
-      glm::vec2 font_size_vec =
-          font->CalcTextSizeA(font_size, FLT_MAX, 0.0f, text.c_str());
+      const glm::vec2 font_size_vec =
+          font->CalcTextSizeA(font_size, FLT_MAX, 0.0F, text.c_str());
       pos.x = pos.x - (font_size_vec.x + tick_gap);
-      pos.y = pos.y - (font_size_vec.y * 0.5f);
+      pos.y = pos.y - (font_size_vec.y * 0.5F);
 
       draw_list->AddText(font, font_size, pos, axis_color, text.c_str());
     }
 
     draw_list->PushClipRect(canvas_rect.lt(), canvas_rect.rb(), false);
 
-    draw_list->AddLine(x_axisline_p0, x_axisline_p1, axis_color, 2.0f);
-    draw_list->AddLine(y_axisline_p0, y_axisline_p1, axis_color, 2.0f);
+    draw_list->AddLine(x_axisline_p0, x_axisline_p1, axis_color, 2.0F);
+    draw_list->AddLine(y_axisline_p0, y_axisline_p1, axis_color, 2.0F);
 
     for (const auto &line : x_axis_ticks) {
-      draw_list->AddLine(line[0], line[1], axis_color, 2);
+      draw_list->AddLine(line[0], line[1], axis_color, 2); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     for (const auto &line : y_axis_ticks) {
-      draw_list->AddLine(line[0], line[1], axis_color, 2);
+      draw_list->AddLine(line[0], line[1], axis_color, 2); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     draw_list->PopClipRect();
 
     draw_list->PushClipRect(plot_rect.lt(), plot_rect.rb(), false);
 
-    ImColor grid_lines_color(0.8f, 0.8f, 0.8f, 0.5f);
+    const ImColor grid_lines_color(0.8F, 0.8F, 0.8F, 0.5F);
 
     for (const auto &line : vertical_grid) {
-      draw_list->AddLine(line[0], line[1], grid_lines_color);
+      draw_list->AddLine(line[0], line[1], grid_lines_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     for (const auto &line : horizontal_grid) {
-      draw_list->AddLine(line[0], line[1], grid_lines_color);
+      draw_list->AddLine(line[0], line[1], grid_lines_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
     for (const auto &bin : bin_array) {
-      draw_list->AddRect(bin[0], bin[1], histogram_color);
-      draw_list->AddRectFilled(bin[0], bin[1], histogram_color);
+      draw_list->AddRect(bin[0], bin[1], histogram_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
+      draw_list->AddRectFilled(bin[0], bin[1], histogram_color); // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
     }
 
-    draw_list->AddPolyline(transformed_curve.data(), transformed_curve.size(),
-                           curve_color, false, 2.0f);
+    draw_list->AddPolyline(transformed_curve.data(),
+                           static_cast<int>(transformed_curve.size()),
+                           curve_color, ImDrawFlags_None, 2.0F);
 
     draw_list->PopClipRect();
   }
@@ -337,23 +348,23 @@ private:
   rect4f canvas_rect;
   rect4f plot_rect;
 
-  float axis_gap_back;
-  float axis_gap_front;
+  float axis_gap_back = 0.0F;
+  float axis_gap_front = 0.0F;
 
-  bool is_hovered;
-  bool is_active;
+  bool is_hovered = false;
+  bool is_active = false;
 
   glm::vec2 scrolling;
-  glm::vec2 origin;
+  glm::vec2 origin{};
 
   val4f axes;
   std::array<float, 2> grid_gaps;
 
-  glm::vec2 x_axisline_p0;
-  glm::vec2 x_axisline_p1;
+  glm::vec2 x_axisline_p0{};
+  glm::vec2 x_axisline_p1{};
 
-  glm::vec2 y_axisline_p0;
-  glm::vec2 y_axisline_p1;
+  glm::vec2 y_axisline_p0{};
+  glm::vec2 y_axisline_p1{};
 
 
   std::vector<std::array<glm::vec2, 2>> vertical_grid;
@@ -368,3 +379,5 @@ private:
   std::vector<ImVec2> transformed_curve;
   std::vector<std::array<glm::vec2, 2>> bin_array;
 };
+
+#endif // HOME_TITAN99_CODE_RANDOM_NUMBERS_SAMPLES_SRC_PLOT_H
